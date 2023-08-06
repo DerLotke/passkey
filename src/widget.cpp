@@ -6,7 +6,8 @@ namespace UI
         area_(area), 
         parent_(parent),
         child_(nullptr),
-        nextSibbling_(nullptr)
+        nextSibbling_(nullptr),
+        faceColor_(DefaultFaceColor)
     {
         if (parent_) {
             
@@ -56,6 +57,6 @@ namespace UI
     void Widget::draw(TFT_eSprite &drawBuffer, const Rect &clientArea) const
     {
         Rect area = clientArea.toScreen();
-        drawBuffer.fillRect(area.x, area.y, area.width, area.height, TFT_BLACK);
+        drawBuffer.fillRect(area.x, area.y, area.width, area.height, faceColor_);
     }
 }

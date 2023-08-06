@@ -3,6 +3,7 @@
 #include <TFT_eSPI.h>
 
 #include <rect.hpp>
+#include <colors.hpp>
 
 
 namespace UI {
@@ -13,6 +14,8 @@ namespace UI {
         virtual ~Widget();
 
         virtual void redraw(TFT_eSprite &drawBuffer, const Rect &clientArea) const;
+        void setFaceColor(Color color) { faceColor_ = color; }
+        Color getFaceColor() const { return faceColor_; }
         
         protected:
         virtual void draw(TFT_eSprite &drawBuffer, const Rect &clientArea) const;
@@ -21,5 +24,6 @@ namespace UI {
         Widget * parent_;
         Widget * child_;
         Widget * nextSibbling_;
+        Color faceColor_;
     };
 }
