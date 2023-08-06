@@ -13,10 +13,6 @@ UI::Application *application;
 UI::Label * newLabel;
 
 void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(115200);
-  Serial.println("Hello World!");
-
   UI::Rect fullScreen = UI::Application::getFullFrameRect();
   application = new UI::Application();
   newLabel = new UI::Label(UI::Rect(1,1,fullScreen.width,1),"\260\261\262\333Hello World!\333\262\261\260", application);
