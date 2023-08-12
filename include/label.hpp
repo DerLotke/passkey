@@ -21,6 +21,8 @@ namespace UI
 
         String text_;
         Color textColor_;
+        Color drawTextColor_;
+        Color origFaceColor_;
         bool inverted_;
 
         void draw(TFT_eSprite &drawBuffer, const Rect &clientArea) const override;
