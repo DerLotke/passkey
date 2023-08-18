@@ -30,6 +30,8 @@ VerticalMenu::~VerticalMenu()
 
     menuLabel_.clear();
     delete selectLabel_;
+    delete upLabel_;
+    delete downLabel_;
 }
 
 unsigned VerticalMenu::itemsOnDisplay() const
