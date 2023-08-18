@@ -5,18 +5,26 @@ namespace UI
     Label::Label(const Rect &rect, const String &text, Widget * const parent):
         Widget(rect,parent),
         text_(text),
-        textColor_(DefaultTextColor)
+        textColor_(DefaultTextColor),
+        drawTextColor_(DefaultTextColor),
+        origFaceColor_(DefaultFaceColor),
+        inverted_(false)
     {
     }
     
     void Label::setInverted(bool inverted) {
        
-        if (inverted_ != inverted) {
-            Color tmp = getFaceColor();
-            setFaceColor(textColor_);
-            textColor_ = tmp;
-            inverted_ = inverted;
+        if(inverted)
+        {
+            drawTextColor_ = origFaceColor_;
+            faceColor_ = textColor_;
+        } else
+        {
+            drawTextColor_ = textColor_;
+            faceColor_ = origFaceColor_;
         }
+
+        inverted_ = inverted;
     }
 
     void Label::draw(TFT_eSprite &drawBuffer, const Rect &clientArea) const
@@ -29,7 +37,7 @@ namespace UI
                 );
         const Rect drawRect = clientArea.toScreen();
 
-        drawBuffer.setTextColor(textColor_);
+        drawBuffer.setTextColor(drawTextColor_);
         drawBuffer.drawString(textToDraw, drawRect.x, drawRect.y);
     }
 }
