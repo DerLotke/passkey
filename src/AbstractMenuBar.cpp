@@ -2,7 +2,7 @@
 
 namespace UI
 {
-    AbstractMenuBar::AbstractMenuBar(const std::list<String> &menuItems,
+    AbstractMenuBar::AbstractMenuBar(const std::vector<String> &menuItems,
                                      unsigned selected):
                                      items_(menuItems),
                                      selectedItem_(selected)

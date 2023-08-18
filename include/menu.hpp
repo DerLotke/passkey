@@ -5,13 +5,16 @@
 
 #include <Arduino.h>
 #include <list>
+#include <vector>
 
 namespace UI {
     class AbstractMenuBar
     {
         public:
 
-        AbstractMenuBar(const std::list<String> &menuItems,
+        typedef std::vector<String> MenuItems;
+
+        AbstractMenuBar(const MenuItems &menuItems,
                         unsigned selected = 0);
         
         virtual ~AbstractMenuBar();
@@ -21,7 +24,7 @@ namespace UI {
 
         protected:
 
-        std::list<String> items_;
+        MenuItems items_;
         unsigned selectedItem_;
 
         virtual unsigned itemsOnDisplay() const = 0;
@@ -31,5 +34,27 @@ namespace UI {
         unsigned itemsToDraw() const;
 
 
+    };
+
+    class VerticalMenu: public AbstractMenuBar, public Widget
+    {
+        public:
+            VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
+                        Rect area,
+                        unsigned selected,
+                        Widget * const parent
+                        );
+
+            ~VerticalMenu();
+            
+            void selectNext() override;
+            void selectPrevious() override;
+            unsigned itemsOnDisplay() const override;
+
+        private:
+            std::list<Label*> menuLabel_;
+            Label *selectLabel_;
+
+            void updateDisplayedLabels();
     };
 }
