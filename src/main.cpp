@@ -3,11 +3,12 @@
 #include <USB.h>
 #include <USBHIDKeyboard.h>
 
+#include <list>
+
 #include "ec1834.hpp"
 #include "widget.hpp"
 #include "statusbar.hpp"
 #include "application.hpp"
-
 
 UI::Application *application;
 Statusbar *statusBar;
