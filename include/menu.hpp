@@ -1,21 +1,35 @@
 #pragma once
 
-#include <menuItem.hpp>
 #include <widget.hpp>
-#include <rect.hpp>
+#include <label.hpp>
+
+#include <Arduino.h>
 #include <list>
 
 namespace UI {
-    class AbstractMenuBar : public Widget
+    class AbstractMenuBar
     {
         public:
 
-        AbstractMenuBar(const Rect &area, Widget * const parent = nullptr);
+        AbstractMenuBar(const std::list<String> &menuItems,
+                        unsigned selected = 0);
         
-        protected:
-        std::list<MenuItem> items;
+        virtual ~AbstractMenuBar();
+        
+        virtual void selectNext();
+        virtual void selectPrevious();
 
-        void draw(TFT_eSprite &drawBuffer, const Rect &clientArea) const override = 0;
+        protected:
+
+        std::list<String> items_;
+        unsigned selectedItem_;
+
+        virtual unsigned itemsOnDisplay() const = 0;
+
+        unsigned firstItemToDisplay() const;
+        unsigned lastItemToDisplay() const;
+        unsigned itemsToDraw() const;
+
 
     };
 }
