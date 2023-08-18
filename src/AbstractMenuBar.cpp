@@ -15,15 +15,24 @@ namespace UI
 
     unsigned AbstractMenuBar::firstItemToDisplay() const
     {
-        unsigned const displayedBefore = (itemsOnDisplay() - 1) / 2;
-        return selectedItem_ > displayedBefore ? selectedItem_ - displayedBefore : 0; 
+        unsigned const displayed = itemsOnDisplay();
+        unsigned displayedBefore = (displayed - 1) / 2;
+        unsigned first = selectedItem_ > displayedBefore ? selectedItem_ - displayedBefore : 0;
+
+        if (first + displayed >= items_.size())
+        {
+            unsigned over = (first + displayed) - items_.size();
+            first = first >= over ? first - over : 0;
+        }
+
+        return first; 
     }
 
 
     unsigned AbstractMenuBar::lastItemToDisplay() const
     {
-        unsigned const displayedAfter = (itemsOnDisplay() - 1) / 2;
-        return items_.size() > displayedAfter + selectedItem_ ? selectedItem_ + displayedAfter : items_.size(); 
+        unsigned const displayedAfter = firstItemToDisplay() + itemsOnDisplay() - 1;
+        return items_.size() > displayedAfter ? displayedAfter : items_.size() - 1; 
 
     }
 

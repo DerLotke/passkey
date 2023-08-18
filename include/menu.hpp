@@ -54,6 +54,8 @@ namespace UI {
         private:
             std::list<Label*> menuLabel_;
             Label *selectLabel_;
+            Label *upLabel_;
+            Label *downLabel_;
 
             void updateDisplayedLabels();
     };

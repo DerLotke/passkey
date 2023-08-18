@@ -11,11 +11,13 @@ VerticalMenu::VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
 {
     for(unsigned i=0; i< itemsOnDisplay(); ++i)
     {
-        Label* tmp = new Label(Rect(1,i,area_.width - 1, 1),"",this);
+        Label* tmp = new Label(Rect(1,i,area_.width - 2, 1),"",this);
         menuLabel_.push_back(tmp);
     }
 
-    selectLabel_ = new Label(Rect(0,0,1,1),"\x10",this);
+    selectLabel_ = new Label(Rect(0,0,1,1),"\x10S",this);
+    upLabel_ = new Label(Rect(area.width-1,0,1,1)," ",this);
+    downLabel_ = new Label(Rect(area.width-1,area.height-1,1,1),"\x19",this);
     updateDisplayedLabels();
 }
 
@@ -55,16 +57,30 @@ void VerticalMenu::updateDisplayedLabels()
     }
     
     auto it = menuLabel_.begin();
+    unsigned last = lastItemToDisplay();
+    unsigned first = firstItemToDisplay();
 
-    for(unsigned i= firstItemToDisplay(); i<= lastItemToDisplay(); ++i, ++it)
+    for(unsigned i= first; i<= last; ++i, ++it)
     {
         (*it)->setText(items_.at(i));
 
         if (i == selectedItem_) {
             (*it)->setInverted(true);
-            selectLabel_->moveTo(0,i-firstItemToDisplay());
+            selectLabel_->moveTo(0,i-first);
         } else {
             (*it)->setInverted(false);
+        }
+
+        if(first == 0) {
+            upLabel_->setText(" ");
+        } else {
+            upLabel_->setText("\x18");
+        }
+
+        if(last < items_.size() - 1) {
+            downLabel_->setText("\x19");
+        }else {
+            downLabel_->setText(" ");
         }
     }
 }
