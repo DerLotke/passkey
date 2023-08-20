@@ -6,6 +6,7 @@
 #include <Arduino.h>
 #include <list>
 #include <vector>
+#include <memory>
 
 namespace UI {
     class AbstractMenuBar
@@ -52,10 +53,10 @@ namespace UI {
             unsigned itemsOnDisplay() const override;
 
         private:
-            std::list<Label*> menuLabel_;
-            Label *selectLabel_;
-            Label *upLabel_;
-            Label *downLabel_;
+            std::list<std::shared_ptr<Label> > menuLabel_;
+            std::shared_ptr<Label> selectLabel_;
+            std::shared_ptr<Label> upLabel_;
+            std::shared_ptr<Label> downLabel_;
 
             void updateDisplayedLabels();
     };

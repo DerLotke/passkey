@@ -11,27 +11,22 @@ VerticalMenu::VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
 {
     for(unsigned i=0; i< itemsOnDisplay(); ++i)
     {
-        Label* tmp = new Label(Rect(1,i,area_.width - 2, 1),"",this);
-        menuLabel_.push_back(tmp);
+        menuLabel_.emplace_back(std::make_shared<Label>(Rect(1,i,area_.width - 2, 1),"",this));
     }
 
-    selectLabel_ = new Label(Rect(0,0,1,1),"\x10S",this);
-    upLabel_ = new Label(Rect(area.width-1,0,1,1)," ",this);
-    downLabel_ = new Label(Rect(area.width-1,area.height-1,1,1),"\x19",this);
+    selectLabel_ = std::make_shared<Label>(Rect(0,0,1,1),"\x10S",this);
+    upLabel_ = std::make_shared<Label>(Rect(area.width-1,0,1,1)," ",this);
+    downLabel_ = std::make_shared<Label>(Rect(area.width-1,area.height-1,1,1),"\x19",this);
     updateDisplayedLabels();
 }
 
 VerticalMenu::~VerticalMenu()
 {
-    for(auto label : menuLabel_)
-    {
-        delete label;
-    }
-
+    /*All this is not needed but I feel better that way*/
     menuLabel_.clear();
-    delete selectLabel_;
-    delete upLabel_;
-    delete downLabel_;
+    selectLabel_.reset();
+    upLabel_.reset();
+    downLabel_.reset();
 }
 
 unsigned VerticalMenu::itemsOnDisplay() const
