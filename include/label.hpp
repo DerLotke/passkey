@@ -17,6 +17,8 @@ namespace UI
         void setInverted(bool inverted);
         bool getInverted() const { return inverted_; }
 
+        void setText(const String &newText) { text_ = newText; }
+
         protected:
 
         String text_;
