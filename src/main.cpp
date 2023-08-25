@@ -2,6 +2,7 @@
 #include <TFT_eSPI.h>
 #include <USB.h>
 #include <USBHIDKeyboard.h>
+#include <OneButton.h>
 
 #include <list>
 
@@ -17,6 +18,7 @@ Statusbar *statusBar;
 
 static const UI::AbstractMenuBar::MenuItems menuItems = {"Entry 1", "Entry 2", "Entry 3", "Entry 4", "Entry 5", "Entry 6",
                                                          "Entry 7", "Entry 8", "Entry 9", "Entry 10"};
+OneButton btn = OneButton(0, true );        // Button is active LOW
 
 
 void setup() {
@@ -27,11 +29,12 @@ void setup() {
                                UI::Rect(0,1,fullScreen.width, fullScreen.height - 1),
                                0,
                                application);
+  btn.attachClick([]{vmenu->selectNext();});
 }
 
 unsigned count = 0;
 void loop() {
+  btn.tick();
   application->update();
-  delay(500);
-  vmenu->selectNext();
+  delay(5);
 }
