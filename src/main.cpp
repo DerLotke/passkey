@@ -72,9 +72,17 @@ void setup() {
   btn.attachClick([]{vmenu->selectNext();});
 
   keyBoard.onEvent(ARDUINO_USB_HID_KEYBOARD_LED_EVENT, myEventHandler);
+  
   keyBoard.begin();
   hwcdc.begin();
   usbcdc.begin(); 
+
+  USB.productName("PassKey");
+  USB.manufacturerName("Falk Software");
+  USB.serialNumber("1");
+  USB.firmwareVersion(1);
+  USB.VID(0x413C); //Claim we are from DELL :P
+  USB.PID(0x2010); //A nice generic Keyboard
 
   USB.begin();
 }
