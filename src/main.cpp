@@ -5,6 +5,8 @@
 #include <OneButton.h>
 
 #include <list>
+#include <aes/esp_aes.h>
+#include <sdcard.hpp>
 
 #include "ec1834.hpp"
 #include "widget.hpp"
@@ -15,6 +17,7 @@
 UI::Application *application;
 UI::VerticalMenu *vmenu;
 Statusbar *statusBar;
+SDCard *sdCard;
 
 static const UI::AbstractMenuBar::MenuItems menuItems = {"Entry 1", "Entry 2", "Entry 3", "Entry 4", "Entry 5", "Entry 6",
                                                          "Entry 7", "Entry 8", "Entry 9", "Entry 10"};
@@ -30,6 +33,7 @@ void setup() {
                                0,
                                application);
   btn.attachClick([]{vmenu->selectNext();});
+  sdCard = new SDCard();
 }
 
 unsigned count = 0;
