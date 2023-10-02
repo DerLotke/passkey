@@ -14,17 +14,35 @@
 #include "application.hpp"
 #include "menu.hpp"
 
-UI::Application *application;
-UI::VerticalMenu *vmenu;
-Statusbar *statusBar;
-SDCard *sdCard;
+static UI::Application *application;
+static UI::VerticalMenu *vmenu;
+static Statusbar *statusBar;
+static SDCard *sdCard;
 
-static const UI::AbstractMenuBar::MenuItems menuItems = {"Entry 1", "Entry 2", "Entry 3", "Entry 4", "Entry 5", "Entry 6",
-                                                         "Entry 7", "Entry 8", "Entry 9", "Entry 10"};
-OneButton btn = OneButton(0, true );        // Button is active LOW
+static UI::AbstractMenuBar::MenuItems menuItems;
+static OneButton btn = OneButton(0, true );        // Button is active LOW
+
+static void loadDirectoryContent(void)
+{
+  std::shared_ptr<DIR> directory = sdCard->openDir("");
+
+  dirent *dir;
+  while((dir = readdir(directory.get())))
+  {
+      if(DT_REG == dir->d_type) {
+        menuItems.emplace_back(String(dir->d_name));
+      }
+  }
+
+  if(menuItems.empty()) {
+    menuItems.emplace_back(String("No Files found"));
+  }
+}
 
 
 void setup() {
+  sdCard = new SDCard();
+  loadDirectoryContent();
   UI::Rect fullScreen = UI::Application::getFullFrameRect();
   application = new UI::Application();
   statusBar = new Statusbar(0,application);
@@ -33,7 +51,6 @@ void setup() {
                                0,
                                application);
   btn.attachClick([]{vmenu->selectNext();});
-  sdCard = new SDCard();
 }
 
 unsigned count = 0;
