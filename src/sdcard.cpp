@@ -37,7 +37,7 @@ SDCard::SDCard() : card_(nullptr),
     host.flags = SDMMC_HOST_FLAG_4BIT | SDMMC_HOST_FLAG_DDR;
 
     slot_config.clk = SD_MMC_CLK_PIN();
-    slot_config.cmd = SD_MMC_CLK_PIN();
+    slot_config.cmd = SD_MMC_CMD_PIN();
     slot_config.d0 = SD_MMC_D0_PIN();
     slot_config.d1 = SD_MMC_D1_PIN();
     slot_config.d2 = SD_MMC_D2_PIN();
@@ -73,6 +73,22 @@ std::shared_ptr<FILE> SDCard::open(const String &filename, OpenMode const mode)
         result = std::shared_ptr<FILE>(fopen(path.c_str(),
                                              SDCard::OpenMode::FILE_READWRITE == mode ? "w+b" : "rb"),
                                        fclose);
+    }
+
+    return result;
+}
+
+std::shared_ptr<DIR> SDCard::openDir(const String &pathName)
+{
+    std::shared_ptr<DIR> result;
+
+    if(sdcardOk_)
+    {
+        String path(mountPoint());
+        path += "/";
+        path += pathName;
+
+        result = std::shared_ptr<DIR>(opendir(path.c_str()), closedir);
     }
 
     return result;
