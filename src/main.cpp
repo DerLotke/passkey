@@ -1,26 +1,24 @@
 #include <Arduino.h>
 #include <TFT_eSPI.h>
-#include <USB.h>
-#include <USBHIDKeyboard.h>
-#include <OneButton.h>
 
-#include <list>
 #include <aes/esp_aes.h>
 #include <sdcard.hpp>
+
+#include <list>
 
 #include "ec1834.hpp"
 #include "widget.hpp"
 #include "statusbar.hpp"
 #include "application.hpp"
 #include "menu.hpp"
+#include "keyboard.hpp"
 
 static UI::Application *application;
 static UI::VerticalMenu *vmenu;
 static Statusbar *statusBar;
 static SDCard *sdCard;
-
 static UI::AbstractMenuBar::MenuItems menuItems;
-static OneButton btn = OneButton(0, true );        // Button is active LOW
+static UsbKeyboard *keyboard;
 
 static void loadDirectoryContent(void)
 {
@@ -50,12 +48,14 @@ void setup() {
                                UI::Rect(0,1,fullScreen.width, fullScreen.height - 1),
                                0,
                                application);
-  btn.attachClick([]{vmenu->selectNext();});
+  keyboard = new UsbKeyboard();
 }
 
 unsigned count = 0;
 void loop() {
-  btn.tick();
+  keyboard->tick();
+
   application->update();
-  delay(5);
+
+  delay(5);  
 }
