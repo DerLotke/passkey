@@ -2,6 +2,7 @@
 
 #include <widget.hpp>
 #include <label.hpp>
+#include <keyboard.hpp>
 
 #include <Arduino.h>
 #include <list>
@@ -51,6 +52,9 @@ namespace UI {
         unsigned lastItemToDisplay() const;
         unsigned itemsToDraw() const;
 
+        private:
+        void onKeyboardEvent(UsbKeyboard::Events event);
+        static void keyboardEventHandler( void* event_handler_arg, esp_event_base_t event_base,  int32_t event_id, void* event_data);
 
     };
 
