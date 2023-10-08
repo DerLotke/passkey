@@ -12,7 +12,12 @@ class UsbKeyboard
         enum Events{
             KeyUp,
             KeyDown,
-            KeySelect
+            KeySelect,
+            LedsUpdated
+        };
+
+        struct EventData {
+            UsbKeyboard *self;
         };
 
         UsbKeyboard();
