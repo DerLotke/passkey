@@ -44,10 +44,28 @@ UsbKeyboard::UsbKeyboard()
 
 void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const led)
 {
+    arduino_usb_hid_keyboard_event_data_t changed;
+    
+    changed.leds = led.leds ^ leds_.leds; //Determine changed leds by using XOR 
     leds_ = led;
 
     EventData tmp;
     tmp.self = this;
 
     esp_event_post(KEYBOARD_EVENT, LedsUpdated,&tmp, sizeof(EventData),0);
+
+    if (changed.capslock) 
+    {
+        esp_event_post(KEYBOARD_EVENT, KeyDown,&tmp, sizeof(EventData),0);
+    }
+
+    if (changed.numlock) 
+    {
+        esp_event_post(KEYBOARD_EVENT, KeyUp,&tmp, sizeof(EventData),0);
+    }
+
+    if (changed.scrolllock) 
+    {
+        esp_event_post(KEYBOARD_EVENT, KeySelect,&tmp, sizeof(EventData),0);
+    }
 }
