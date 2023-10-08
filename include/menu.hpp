@@ -8,10 +8,23 @@
 #include <vector>
 #include <memory>
 
+#include <esp_event.h>
+
+ESP_EVENT_DECLARE_BASE(MENU_EVENT);
+
 namespace UI {
     class AbstractMenuBar
     {
         public:
+
+        enum Events{
+            ItemSelected
+        };
+
+        struct EventData
+        {
+            AbstractMenuBar *self;
+        };
 
         typedef std::vector<String> MenuItems;
 
@@ -22,11 +35,15 @@ namespace UI {
         
         virtual void selectNext();
         virtual void selectPrevious();
+        virtual void entryChoosen();
+        virtual String selectedItem() const { return items_[selectedItem_]; }
+        virtual unsigned selectedIndex() const {return selectedItem_; }
 
         protected:
 
         MenuItems items_;
         unsigned selectedItem_;
+        
 
         virtual unsigned itemsOnDisplay() const = 0;
 

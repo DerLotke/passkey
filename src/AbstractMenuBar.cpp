@@ -1,5 +1,7 @@
 #include "menu.hpp"
 
+ESP_EVENT_DEFINE_BASE(MENU_EVENT);
+
 namespace UI
 {
     AbstractMenuBar::AbstractMenuBar(const std::vector<String> &menuItems,
@@ -52,4 +54,12 @@ namespace UI
             selectedItem_ = items_.size() - 1;
         }
     }
+
+    void AbstractMenuBar::entryChoosen()
+    {
+        EventData data;
+        data.self = this;
+        esp_event_post(MENU_EVENT, ItemSelected, &data, sizeof(EventData), 0);
+    }
+
 } // namespace UI
