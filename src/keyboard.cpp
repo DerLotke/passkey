@@ -23,23 +23,30 @@ void UsbKeyboard::usbKeyboardEventHandler( void* event_handler_arg, esp_event_ba
     }
 }
 
-UsbKeyboard::UsbKeyboard()
+UsbKeyboard::UsbKeyboard(bool const skipUsb):
+    button_(0, true ),
+    isFirstUpdate_(true)
 {
     
     arduino_usb_event_handler_register_with(ARDUINO_USB_HID_KEYBOARD_EVENTS, 
                                             ARDUINO_USB_HID_KEYBOARD_LED_EVENT, 
                                             UsbKeyboard::usbKeyboardEventHandler, 
                                             this);
-    keyBoard_.begin();
+    if(skipUsb) {
+        keyBoard_.begin();
 
-    USB.productName("PassKey");
-    USB.manufacturerName("Falk Software");
-    USB.serialNumber("1");
-    USB.firmwareVersion(1);
-    USB.VID(0x413C); //Claim we are from DELL :P
-    USB.PID(0x2010); //A nice generic Keyboard
+        USB.productName("PassKey");
+        USB.manufacturerName("Falk Software");
+        USB.serialNumber("1");
+        USB.firmwareVersion(1);
+        USB.VID(0x413C); //Claim we are from DELL :P
+        USB.PID(0x2010); //A nice generic Keyboard
 
-    USB.begin();                            
+        USB.begin();
+    }
+    
+    button_.attachClick([]{esp_event_post(KEYBOARD_EVENT, KeyDown, nullptr, 0, 0); });
+    button_.attachDuringLongPress([]{esp_event_post(KEYBOARD_EVENT, KeySelect, nullptr, 0, 0); });                            
 }
 
 void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const led)
@@ -54,18 +61,23 @@ void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const l
 
     esp_event_post(KEYBOARD_EVENT, LedsUpdated,&tmp, sizeof(EventData),0);
 
-    if (changed.capslock) 
+    if(!isFirstUpdate_)
     {
-        esp_event_post(KEYBOARD_EVENT, KeyDown,&tmp, sizeof(EventData),0);
-    }
+        if (changed.capslock) 
+        {
+            esp_event_post(KEYBOARD_EVENT, KeyDown,&tmp, sizeof(EventData),0);
+        }
 
-    if (changed.numlock) 
-    {
-        esp_event_post(KEYBOARD_EVENT, KeyUp,&tmp, sizeof(EventData),0);
-    }
+        if (changed.numlock) 
+        {
+            esp_event_post(KEYBOARD_EVENT, KeyUp,&tmp, sizeof(EventData),0);
+        }
 
-    if (changed.scrolllock) 
-    {
-        esp_event_post(KEYBOARD_EVENT, KeySelect,&tmp, sizeof(EventData),0);
+        if (changed.scrolllock) 
+        {
+            esp_event_post(KEYBOARD_EVENT, KeySelect,&tmp, sizeof(EventData),0);
+        }
     }
+    
+    isFirstUpdate_ = false;
 }

@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <TFT_eSPI.h>
-#include <OneButton.h>
 
 #include <aes/esp_aes.h>
 #include <sdcard.hpp>
@@ -19,7 +18,6 @@ static UI::VerticalMenu *vmenu;
 static Statusbar *statusBar;
 static SDCard *sdCard;
 static UI::AbstractMenuBar::MenuItems menuItems;
-static OneButton btn = OneButton(0, true );        // Button is active LOW
 static UsbKeyboard *keyboard;
 
 static void loadDirectoryContent(void)
@@ -51,12 +49,11 @@ void setup() {
                                0,
                                application);
   keyboard = new UsbKeyboard();
-  btn.attachClick([]{vmenu->selectNext();});
 }
 
 unsigned count = 0;
 void loop() {
-  btn.tick();
+  keyboard->tick();
 
   application->update();
 
