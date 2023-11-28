@@ -1,4 +1,5 @@
-from xml.dom.minidom import parse
+import sys
+import struct
 
 key_hex_codes = {
     "NONE":     0x00,
@@ -249,7 +250,7 @@ german_keymap = {
     "J" : ["LEFTSHIFT","J"],
     "k" : ["K"],
     "K" : ["LEFTSHIFT","K"],
-    "l" : ["L"]
+    "l" : ["L"],
     "L" : ["LEFTSHIFT","L"],
     "ö" : ["SEMICOLON"],
     "Ö" : ["SEMICOLON"],
@@ -280,5 +281,35 @@ german_keymap = {
     "." : ["DOT"],
     ":" : ["LEFTSHIFT","DOT"],
     "-" : ["SLASH"],
-    "_" : ["LEFTSHIFT","SLASH"]
+    "_" : ["LEFTSHIFT","SLASH"],
+    " " : ["SPACE"]
 }
+
+def getKeySequence(inputKey):
+    sequence = german_keymap[inputKey]
+    keys = [key_hex_codes[x] for x in sequence]
+    return keys
+
+def main(arguments):
+    if len(arguments) != 3:
+        print("Ussage: pwConverter.py [input] [output]")
+        return -1
+
+    with open(arguments[1],"r") as input:
+        with open(arguments[2],"wb") as output:
+            for line in input:
+                for char in line:
+                    keyCodes = getKeySequence(char)
+                    # Press the keys
+                    for i in keyCodes:
+                        output.write(struct.pack("@BB",0x80,i))
+
+                    output.write(struct.pack("@BB", 0x40, 0))
+                    # Release the keys
+                    for i in keyCodes:
+                        output.write(struct.pack("@BB",0x00,i))
+
+                    output.write(struct.pack("@BB", 0x40, 0))
+
+if __name__=="__main__":
+    exit(main(sys.argv))
