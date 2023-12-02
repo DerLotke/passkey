@@ -37,9 +37,31 @@ static void loadDirectoryContent(void)
   }
 }
 
+static void onMenuSelected(void *event_handler_arg,
+                           esp_event_base_t event_base,
+                           int32_t event_id,
+                           void *event_data)
+{
+   if(event_base == MENU_EVENT)
+   {
+      UI::AbstractMenuBar::EventData *eventData = reinterpret_cast<UI::AbstractMenuBar::EventData*>(event_data);
+      
+      if(eventData)
+      {
+        if(eventData->self == vmenu)
+        {
+            KeyStrokeFile file(sdCard->open(vmenu->selectedItem(), SDCard::OpenMode::FILE_READONLY));
+            keyboard->sendKeyStrokes(file);
+        }
+      }
+   }
+}
 
-void setup() {
+void setup()
+{
   esp_event_loop_create_default();
+  esp_event_handler_register(MENU_EVENT,ESP_EVENT_ANY_ID, onMenuSelected, NULL);
+  
   sdCard = new SDCard();
   loadDirectoryContent();
   UI::Rect fullScreen = UI::Application::getFullFrameRect();
