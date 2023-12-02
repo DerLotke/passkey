@@ -60,9 +60,9 @@ SDCard::~SDCard()
     }
 }
 
-std::shared_ptr<FILE> SDCard::open(const String &filename, OpenMode const mode)
+SDCard::SdCardFile SDCard::open(const String &filename, OpenMode const mode)
 {
-    std::shared_ptr<FILE> result;
+    SdCardFile result;
 
     if (sdcardOk_)
     {
@@ -70,17 +70,17 @@ std::shared_ptr<FILE> SDCard::open(const String &filename, OpenMode const mode)
         path += "/";
         path += filename;
 
-        result = std::shared_ptr<FILE>(fopen(path.c_str(),
-                                             SDCard::OpenMode::FILE_READWRITE == mode ? "w+b" : "rb"),
-                                       fclose);
+        result = SdCardFile(fopen(path.c_str(),
+                                  SDCard::OpenMode::FILE_READWRITE == mode ? "w+b" : "rb"),
+                            fclose);
     }
 
     return result;
 }
 
-std::shared_ptr<DIR> SDCard::openDir(const String &pathName)
+SDCard::SdCardDirectory SDCard::openDir(const String &pathName)
 {
-    std::shared_ptr<DIR> result;
+    SdCardDirectory result;
 
     if(sdcardOk_)
     {
@@ -88,7 +88,7 @@ std::shared_ptr<DIR> SDCard::openDir(const String &pathName)
         path += "/";
         path += pathName;
 
-        result = std::shared_ptr<DIR>(opendir(path.c_str()), closedir);
+        result = SdCardDirectory(opendir(path.c_str()), closedir);
     }
 
     return result;
