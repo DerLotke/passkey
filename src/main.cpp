@@ -71,7 +71,7 @@ void setup()
                                UI::Rect(0,1,fullScreen.width, fullScreen.height - 1),
                                0,
                                application);
-  keyboard = new UsbKeyboard(true);
+  keyboard = new UsbKeyboard(false);
 }
 
 unsigned count = 0;
