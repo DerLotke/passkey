@@ -39,6 +39,7 @@ static void loadDirectoryContent(void)
 
 
 void setup() {
+  esp_event_loop_create_default();
   sdCard = new SDCard();
   loadDirectoryContent();
   UI::Rect fullScreen = UI::Application::getFullFrameRect();
@@ -48,7 +49,7 @@ void setup() {
                                UI::Rect(0,1,fullScreen.width, fullScreen.height - 1),
                                0,
                                application);
-  keyboard = new UsbKeyboard();
+  keyboard = new UsbKeyboard(true);
 }
 
 unsigned count = 0;

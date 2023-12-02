@@ -32,7 +32,7 @@ UsbKeyboard::UsbKeyboard(bool const skipUsb):
                                             ARDUINO_USB_HID_KEYBOARD_LED_EVENT, 
                                             UsbKeyboard::usbKeyboardEventHandler, 
                                             this);
-    if(skipUsb) {
+    if(!skipUsb) {
         keyBoard_.begin();
 
         USB.productName("PassKey");

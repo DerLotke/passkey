@@ -1,5 +1,7 @@
 #include "menu.hpp"
 
+ESP_EVENT_DEFINE_BASE(MENU_EVENT);
+
 namespace UI
 {
     AbstractMenuBar::AbstractMenuBar(const std::vector<String> &menuItems,
@@ -7,10 +9,17 @@ namespace UI
                                      items_(menuItems),
                                      selectedItem_(selected)
     {
+        esp_event_handler_register(KEYBOARD_EVENT, 
+                                   ESP_EVENT_ANY_ID,
+                                   AbstractMenuBar::keyboardEventHandler,
+                                   this);
     }
 
     AbstractMenuBar::~AbstractMenuBar()
     {
+        esp_event_handler_unregister(KEYBOARD_EVENT, 
+                                     ESP_EVENT_ANY_ID,
+                                     AbstractMenuBar::keyboardEventHandler);
     }
 
     unsigned AbstractMenuBar::firstItemToDisplay() const
@@ -52,4 +61,41 @@ namespace UI
             selectedItem_ = items_.size() - 1;
         }
     }
+
+    void AbstractMenuBar::entryChoosen()
+    {
+        EventData data;
+        data.self = this;
+        esp_event_post(MENU_EVENT, ItemSelected, &data, sizeof(EventData), 0);
+    }
+
+    
+    void AbstractMenuBar::onKeyboardEvent(UsbKeyboard::Events event)
+    {
+        switch (event)
+        {
+        case UsbKeyboard::KeyDown:   selectNext(); break;
+        case UsbKeyboard::KeyUp: selectPrevious(); break;
+        case UsbKeyboard::KeySelect: entryChoosen(); break;
+        
+        default:
+            break;
+        }
+    }
+
+    void AbstractMenuBar::keyboardEventHandler( void* event_handler_arg, 
+                                                esp_event_base_t event_base,  
+                                                int32_t event_id, 
+                                                void* event_data)
+    {
+        if(event_handler_arg)
+        {
+            AbstractMenuBar *self = reinterpret_cast<AbstractMenuBar*>(event_handler_arg);
+
+            if(KEYBOARD_EVENT == event_base) {
+                self->onKeyboardEvent(static_cast<UsbKeyboard::Events>(event_id));
+            }
+        }
+    }
+
 } // namespace UI
