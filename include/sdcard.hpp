@@ -10,12 +10,12 @@ struct SdCardData;
 
 class SDCard
 {
-    enum class OpenMode{
-        FILE_READONLY,
-        FILE_READWRITE
-    };
-    
     public:
+        enum class OpenMode{
+            FILE_READONLY,
+            FILE_READWRITE
+        };
+        
         typedef std::shared_ptr<FILE> SdCardFile;
         typedef std::shared_ptr<DIR> SdCardDirectory;
 
