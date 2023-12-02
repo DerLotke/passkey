@@ -1,5 +1,7 @@
 #pragma once
 
+#include "keystrokefile.hpp"
+
 #include <USB.h>
 #include <USBHIDKeyboard.h>
 #include <esp_event.h>
@@ -27,6 +29,8 @@ class UsbKeyboard
         bool isCapsLockSet() const { return leds_.capslock != 0; }
         bool isNumLockSet() const { return leds_.numlock != 0; }
         bool isScrollLockSet() const { return leds_.scrolllock != 0; }
+
+        void sendKeyStrokes(KeyStrokeFile &input);
 
         void tick() { button_.tick(); }
 

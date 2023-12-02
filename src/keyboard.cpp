@@ -81,3 +81,22 @@ void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const l
     
     isFirstUpdate_ = false;
 }
+
+void UsbKeyboard::sendKeyStrokes(KeyStrokeFile &input)
+{
+    for(KeyStrokeFile::KeyStrokeData data = input.getNextCommand();
+        data.type != KeyStrokeFile::CommandTypes::EndOfFile;
+        data = input.getNextCommand())
+        {
+            switch (data.type)
+            {
+            case KeyStrokeFile::CommandTypes::KeyPress: keyBoard_.pressRaw(data.parameter); break;
+            case KeyStrokeFile::CommandTypes::KeyRelease: keyBoard_.releaseRaw(data.parameter); break;
+            case KeyStrokeFile::CommandTypes::TypeDelay: delayMicroseconds(data.parameter * 1000); break;
+            
+            default:
+                break;
+            }
+        }
+    keyBoard_.releaseAll();
+}
