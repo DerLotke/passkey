@@ -57,10 +57,27 @@ static void onMenuSelected(void *event_handler_arg,
    }
 }
 
+static void onLedUpdate(void *event_handler_arg,
+                           esp_event_base_t event_base,
+                           int32_t event_id,
+                           void *event_data)
+{
+  if(event_base == KEYBOARD_EVENT && event_id == UsbKeyboard::LedsUpdated) {
+      UsbKeyboard::EventData *event = reinterpret_cast<UsbKeyboard::EventData *>(event_data);
+      if(event)
+      {
+          statusBar->setCapsLockStatus(event->self->isCapsLockSet());
+          statusBar->setNumLockStatus(event->self->isNumLockSet());
+          statusBar->setScrollLockStatus(event->self->isScrollLockSet());
+      }
+  }
+}
+
 void setup()
 {
   esp_event_loop_create_default();
   esp_event_handler_register(MENU_EVENT,ESP_EVENT_ANY_ID, onMenuSelected, NULL);
+  esp_event_handler_register(KEYBOARD_EVENT,UsbKeyboard::LedsUpdated, onLedUpdate, NULL);
   
   sdCard = new SDCard();
   loadDirectoryContent();
