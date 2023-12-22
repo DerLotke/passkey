@@ -46,7 +46,7 @@ UsbKeyboard::UsbKeyboard(bool const skipUsb):
     }
     
     button_.attachClick([]{esp_event_post(KEYBOARD_EVENT, KeyDown, nullptr, 0, 0); });
-    button_.attachDuringLongPress([]{esp_event_post(KEYBOARD_EVENT, KeySelect, nullptr, 0, 0); });                            
+    button_.attachLongPressStart([]{esp_event_post(KEYBOARD_EVENT, KeySelect, nullptr, 0, 0); });                            
 }
 
 void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const led)

@@ -57,8 +57,10 @@ namespace UI
 
     void AbstractMenuBar::selectPrevious()
     {
-        if ((--selectedItem_) < 0) {
+        if (selectedItem_ == 0) {
             selectedItem_ = items_.size() - 1;
+        } else {
+            --selectedItem_;
         }
     }
 
