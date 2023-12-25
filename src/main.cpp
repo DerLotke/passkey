@@ -12,6 +12,8 @@
 #include "application.hpp"
 #include "menu.hpp"
 #include "keyboard.hpp"
+#include "themes.hpp"
+#include "macros.hpp"
 
 static UI::Application *application;
 static UI::VerticalMenu *vmenu;
@@ -45,7 +47,7 @@ static void onMenuSelected(void *event_handler_arg,
    if(event_base == MENU_EVENT)
    {
       UI::AbstractMenuBar::EventData *eventData = reinterpret_cast<UI::AbstractMenuBar::EventData*>(event_data);
-      
+
       if(eventData)
       {
         if(eventData->self == vmenu)
@@ -73,22 +75,57 @@ static void onLedUpdate(void *event_handler_arg,
   }
 }
 
+#define PASSKEY_THEME_DEFAULT robotron
+#ifndef PASSKEY_THEME
+    #define PASSKEY_THEME PASSKEY_THEME_DEFAULT
+#endif // PASSKEY_THEME
+
+
+static void setupThemedElements(
+	UI::Theme const& theme,
+	UI::Rect const& screen,
+	UI::AbstractMenuBar::MenuItems const& items,
+	UI::Application * parent)
+{
+    statusBar = new Statusbar(0, theme, parent);
+    vmenu = new UI::VerticalMenu(items,
+				 UI::Rect(0,1,screen.width, screen.height - 1),
+				 theme,
+				 0,
+				 parent);
+}
+
+
 void setup()
 {
-  esp_event_loop_create_default();
-  esp_event_handler_register(MENU_EVENT,ESP_EVENT_ANY_ID, onMenuSelected, NULL);
-  esp_event_handler_register(KEYBOARD_EVENT,UsbKeyboard::LedsUpdated, onLedUpdate, NULL);
-  
-  sdCard = new SDCard();
-  loadDirectoryContent();
-  UI::Rect fullScreen = UI::Application::getFullFrameRect();
-  application = new UI::Application();
-  statusBar = new Statusbar(0,application);
-  vmenu = new UI::VerticalMenu(menuItems,
-                               UI::Rect(0,1,fullScreen.width, fullScreen.height - 1),
-                               0,
-                               application);
-  keyboard = new UsbKeyboard(false);
+    esp_event_loop_create_default();
+    esp_event_handler_register(MENU_EVENT,ESP_EVENT_ANY_ID, onMenuSelected, NULL);
+    esp_event_handler_register(KEYBOARD_EVENT,UsbKeyboard::LedsUpdated, onLedUpdate, NULL);
+
+    sdCard = new SDCard();
+    loadDirectoryContent();
+    UI::Rect fullScreen = UI::Application::getFullFrameRect();
+    application = new UI::Application();
+    try
+    {
+        if constexpr (PASSKEY_STRINGIZE(PASSKEY_THEME) == "random")
+        {
+	      auto it = UI::themes().begin();
+	      std::advance(it, random(UI::themes().size()));
+	      setupThemedElements(it->second, fullScreen, menuItems, application);
+        }
+        else
+        {
+	      UI::Theme const& theme = UI::themes().at(PASSKEY_STRINGIZE(PASSKEY_THEME));
+	      setupThemedElements(theme, fullScreen, menuItems, application);
+        }
+    }
+    catch (std::out_of_range)
+    {
+        UI::Theme const& theme = UI::themes().at(PASSKEY_STRINGIZE(PASSKEY_THEME_DEFAULT));
+        setupThemedElements(theme, fullScreen, menuItems, application);
+    }
+    keyboard = new UsbKeyboard(false);
 }
 
 unsigned count = 0;
@@ -97,5 +134,5 @@ void loop() {
 
   application->update();
 
-  delay(5);  
+  delay(5);
 }

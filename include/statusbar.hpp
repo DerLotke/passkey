@@ -2,11 +2,13 @@
 
 #include <label.hpp>
 #include <widget.hpp>
+#include <themes.hpp>
 
 class Statusbar: public UI::Widget
 {
     public:
-        Statusbar(int const pos, Widget * const parent = nullptr);
+        explicit Statusbar(int const pos, Widget * const parent = nullptr);
+        explicit Statusbar(int const pos, UI::Theme const& theme, Widget * const parent = nullptr);
 
         void setScrollLockStatus(bool enable) { scrollLockLabel_.setInverted(enable);}
         bool getScrollLockStatus() const { return scrollLockLabel_.getInverted(); }
@@ -14,7 +16,7 @@ class Statusbar: public UI::Widget
         bool getCapsLockStatus() const { return capsLockLabel_.getInverted(); }
         void setNumLockStatus(bool enable) { numLockLabel_.setInverted(enable); }
         bool getNumLockStatus() const { return numLockLabel_.getInverted(); }
-    
+
     protected:
         UI::Label statusText_;
         UI::Label scrollLockLabel_;

@@ -15,7 +15,7 @@ class SDCard
             FILE_READONLY,
             FILE_READWRITE
         };
-        
+
         typedef std::shared_ptr<FILE> SdCardFile;
         typedef std::shared_ptr<DIR> SdCardDirectory;
 

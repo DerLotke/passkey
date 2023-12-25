@@ -38,10 +38,10 @@ class UsbKeyboard
         USBHIDKeyboard keyBoard_;
         arduino_usb_hid_keyboard_event_data_t leds_;
         OneButton button_;
-        bool isFirstUpdate_; 
+        bool isFirstUpdate_;
 
         void onLedStateChange(arduino_usb_hid_keyboard_event_data_t const);
-        
+
         static void usbKeyboardEventHandler( void* event_handler_arg, esp_event_base_t event_base,  int32_t event_id, void* event_data);
 
 };

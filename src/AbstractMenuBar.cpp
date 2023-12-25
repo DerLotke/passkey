@@ -9,7 +9,7 @@ namespace UI
                                      items_(menuItems),
                                      selectedItem_(selected)
     {
-        esp_event_handler_register(KEYBOARD_EVENT, 
+        esp_event_handler_register(KEYBOARD_EVENT,
                                    ESP_EVENT_ANY_ID,
                                    AbstractMenuBar::keyboardEventHandler,
                                    this);
@@ -17,7 +17,7 @@ namespace UI
 
     AbstractMenuBar::~AbstractMenuBar()
     {
-        esp_event_handler_unregister(KEYBOARD_EVENT, 
+        esp_event_handler_unregister(KEYBOARD_EVENT,
                                      ESP_EVENT_ANY_ID,
                                      AbstractMenuBar::keyboardEventHandler);
     }
@@ -34,14 +34,14 @@ namespace UI
             first = first >= over ? first - over : 0;
         }
 
-        return first; 
+        return first;
     }
 
 
     unsigned AbstractMenuBar::lastItemToDisplay() const
     {
         unsigned const displayedAfter = firstItemToDisplay() + itemsOnDisplay() - 1;
-        return items_.size() > displayedAfter ? displayedAfter : items_.size() - 1; 
+        return items_.size() > displayedAfter ? displayedAfter : items_.size() - 1;
 
     }
 
@@ -71,7 +71,7 @@ namespace UI
         esp_event_post(MENU_EVENT, ItemSelected, &data, sizeof(EventData), 0);
     }
 
-    
+
     void AbstractMenuBar::onKeyboardEvent(UsbKeyboard::Events event)
     {
         switch (event)
@@ -79,15 +79,15 @@ namespace UI
         case UsbKeyboard::KeyDown:   selectNext(); break;
         case UsbKeyboard::KeyUp: selectPrevious(); break;
         case UsbKeyboard::KeySelect: entryChoosen(); break;
-        
+
         default:
             break;
         }
     }
 
-    void AbstractMenuBar::keyboardEventHandler( void* event_handler_arg, 
-                                                esp_event_base_t event_base,  
-                                                int32_t event_id, 
+    void AbstractMenuBar::keyboardEventHandler( void* event_handler_arg,
+                                                esp_event_base_t event_base,
+                                                int32_t event_id,
                                                 void* event_data)
     {
         if(event_handler_arg)

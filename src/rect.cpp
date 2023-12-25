@@ -19,7 +19,7 @@ namespace UI
             const int newY = other.y + y;
             const unsigned newWidth = other.x + other.width > width ? width - other.x : other.width;
             const unsigned newHeight = other.y + other.height > height ? height - other.y : other.height;
-        
+
             return Rect( newX, newY, newWidth, newHeight);
         } else {
             return Rect();

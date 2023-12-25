@@ -10,9 +10,9 @@ class Application: public Widget
         Application();
 
         static Rect getFullFrameRect() {return Rect(0,0,TFT_HEIGHT,TFT_WIDTH).toLogical(); }
-        
+
         void update();
-    
+
     private:
         TFT_eSPI tft_;
         TFT_eSprite backBuffer_;
