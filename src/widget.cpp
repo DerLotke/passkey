@@ -2,21 +2,27 @@
 
 namespace UI
 {
-    Widget::Widget(const Rect &area, Widget * const parent): 
-        area_(area), 
+    Widget::Widget(const Rect &area, Widget * const parent):
+        area_(area),
         parent_(parent),
         child_(nullptr),
         nextSibbling_(nullptr),
         faceColor_(DefaultFaceColor)
     {
         if (parent_) {
-            
+
             Widget * firstChild = parent_->child_;
             if (firstChild) {
                 nextSibbling_ = firstChild;
             }
             parent->child_ = this;
         }
+    }
+
+    Widget::Widget(const Rect &area, Theme const& theme, Widget * const parent):
+        Widget(area, parent)
+    {
+        setTheme(theme);
     }
 
     Widget::~Widget()
@@ -37,11 +43,11 @@ namespace UI
             } // else the child was not found which would be an inconsistency error and should never happen
         }
     }
-    
+
     void Widget::redraw(TFT_eSprite &drawBuffer, const Rect &clientArea) const
     {
         Rect const newClientArea = clientArea.intersect(area_);
-        
+
         if(newClientArea.isValid())
         {
             draw(drawBuffer, newClientArea);

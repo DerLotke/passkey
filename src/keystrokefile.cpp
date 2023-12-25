@@ -21,7 +21,7 @@ KeyStrokeFile::KeyStrokeData KeyStrokeFile::getNextCommand()
     {
         uint8_t data[2];
         /* Check if we were able to read the actual data*/
-        if(fread(data, sizeof(data[0]), 2, keyStrokeFile_.get()) == sizeof(data[0]) * 2) 
+        if(fread(data, sizeof(data[0]), 2, keyStrokeFile_.get()) == sizeof(data[0]) * 2)
         {
             result.parameter = data[1];
 

@@ -3,6 +3,7 @@
 #include <widget.hpp>
 #include <label.hpp>
 #include <keyboard.hpp>
+#include <themes.hpp>
 
 #include <Arduino.h>
 #include <list>
@@ -31,9 +32,9 @@ namespace UI {
 
         AbstractMenuBar(const MenuItems &menuItems,
                         unsigned selected = 0);
-        
+
         virtual ~AbstractMenuBar();
-        
+
         virtual void selectNext();
         virtual void selectPrevious();
         virtual void entryChoosen();
@@ -44,7 +45,7 @@ namespace UI {
 
         MenuItems items_;
         unsigned selectedItem_;
-        
+
 
         virtual unsigned itemsOnDisplay() const = 0;
 
@@ -61,17 +62,25 @@ namespace UI {
     class VerticalMenu: public AbstractMenuBar, public Widget
     {
         public:
-            VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
+            explicit VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
                         Rect area,
+                        unsigned selected,
+                        Widget * const parent
+                        );
+            explicit VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
+                        Rect area,
+                        Theme const& theme,
                         unsigned selected,
                         Widget * const parent
                         );
 
             ~VerticalMenu();
-            
+
             void selectNext() override;
             void selectPrevious() override;
             unsigned itemsOnDisplay() const override;
+
+            void setTheme(Theme const& theme) override;
 
         private:
             std::list<std::shared_ptr<Label> > menuLabel_;

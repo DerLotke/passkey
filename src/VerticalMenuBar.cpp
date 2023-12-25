@@ -6,7 +6,7 @@ VerticalMenu::VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
                         Rect area,
                         unsigned selected = 0,
                         Widget * const parent = nullptr
-                        ): AbstractMenuBar(menuItems, selected), 
+                        ): AbstractMenuBar(menuItems, selected),
                            Widget(area, parent)
 {
     for(unsigned i=0; i< itemsOnDisplay(); ++i)
@@ -18,6 +18,16 @@ VerticalMenu::VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
     upLabel_ = std::make_shared<Label>(Rect(area.width-1,0,1,1)," ",this);
     downLabel_ = std::make_shared<Label>(Rect(area.width-1,area.height-1,1,1),"\x19",this);
     updateDisplayedLabels();
+}
+
+VerticalMenu::VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
+                        Rect area,
+                        Theme const& theme,
+                        unsigned selected = 0,
+                        Widget * const parent = nullptr
+                        ): VerticalMenu(menuItems, area, selected, parent)
+{
+    setTheme(theme);
 }
 
 VerticalMenu::~VerticalMenu()
@@ -52,7 +62,7 @@ void VerticalMenu::updateDisplayedLabels()
     {
         label->setText("");
     }
-    
+
     auto it = menuLabel_.begin();
     unsigned last = lastItemToDisplay();
     unsigned first = firstItemToDisplay();
@@ -80,6 +90,18 @@ void VerticalMenu::updateDisplayedLabels()
             downLabel_->setText(" ");
         }
     }
+}
+
+void VerticalMenu::setTheme(Theme const& theme)
+{
+    Widget::setTheme(theme);
+    for (std::shared_ptr<Label> menuLabel : menuLabel_)
+    {
+        menuLabel->setTheme(theme);
+    }
+    selectLabel_->setTheme(theme);
+    upLabel_->setTheme(theme);
+    downLabel_->setTheme(theme);
 }
 
 }//namespace UI

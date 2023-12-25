@@ -8,12 +8,20 @@ namespace UI
         textColor_(DefaultTextColor),
         drawTextColor_(DefaultTextColor),
         origFaceColor_(DefaultFaceColor),
+        style_(Label::Style::Normal),
         inverted_(false)
     {
     }
-    
-    void Label::setInverted(bool inverted) {
-       
+
+    Label::Label(const Rect &rect, const String &text, Theme const& theme, Style style, Widget * const parent):
+        Label(rect, text, parent)
+    {
+        style_ = style;
+        setTheme(theme);
+    }
+
+    void Label::setInverted(bool inverted)
+    {
         if(inverted)
         {
             drawTextColor_ = origFaceColor_;
@@ -31,8 +39,8 @@ namespace UI
     {
         Widget::draw(drawBuffer, clientArea);
         const String textToDraw = text_.substring(0,
-                clientArea.width < text_.length()? 
-                clientArea.width : 
+                clientArea.width < text_.length()?
+                clientArea.width :
                 text_.length()
                 );
         const Rect drawRect = clientArea.toScreen();
