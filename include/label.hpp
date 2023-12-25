@@ -13,7 +13,8 @@ namespace UI
 
         enum class Style {
             Normal,
-            Highlight
+            Highlight,
+	    Heading
         };
 
         explicit Label(const Rect &rect, const String &text, Widget * const parent = nullptr);
@@ -38,6 +39,9 @@ namespace UI
                     break;
                 case Style::Highlight:
                     setTextColor(theme.colors.highlight);
+                    break;
+                case Style::Heading:
+                    setTextColor(theme.colors.heading);
                     break;
             }
             setFaceColor(theme.colors.background);

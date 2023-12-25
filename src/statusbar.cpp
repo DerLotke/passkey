@@ -13,7 +13,7 @@ Statusbar::Statusbar(int const pos, Widget * const parent):
 Statusbar::Statusbar(int const pos, UI::Theme const& theme, Widget * const parent):
     Statusbar(pos, parent)
 {
-    statusText_.usingStyle(UI::Label::Style::Normal).setTheme(theme);
+    statusText_.usingStyle(UI::Label::Style::Heading).setTheme(theme);
     scrollLockLabel_.usingStyle(UI::Label::Style::Highlight).setTheme(theme);
     numLockLabel_.usingStyle(UI::Label::Style::Highlight).setTheme(theme);
     capsLockLabel_.usingStyle(UI::Label::Style::Highlight).setTheme(theme);

@@ -11,7 +11,7 @@ namespace UI
             Color background;
             Color text;
             Color highlight;
-            Color border;
+            Color heading;
 	} colors;
     };
 

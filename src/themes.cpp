@@ -10,7 +10,7 @@ static std::map<String, Theme> const themes_{
                 .background = TFT_BLACK,
                 .text = TFT_GREEN,
                 .highlight = TFT_GREEN,
-                .border = TFT_GREEN
+                .heading = TFT_GREEN
             }
         }
     },
@@ -21,7 +21,7 @@ static std::map<String, Theme> const themes_{
                 .background = TFT_BROWN,
                 .text = TFT_WHITE,
                 .highlight = TFT_GOLD,
-                .border = TFT_WHITE
+                .heading = TFT_SILVER
             }
         }
     },
@@ -32,7 +32,7 @@ static std::map<String, Theme> const themes_{
                 .background = TFT_BLUE,
                 .text = TFT_SKYBLUE,
                 .highlight = TFT_SKYBLUE,
-                .border = TFT_SKYBLUE
+                .heading = TFT_SKYBLUE
             }
         }
     },
@@ -43,7 +43,7 @@ static std::map<String, Theme> const themes_{
                 .background = TFT_MAROON,
                 .text = TFT_GOLD,
                 .highlight = TFT_SILVER,
-                .border = TFT_GOLD
+                .heading = TFT_GOLD
             }
         }
     },
@@ -54,7 +54,7 @@ static std::map<String, Theme> const themes_{
                 .background = TFT_YELLOW,
                 .text = TFT_BLACK,
                 .highlight = TFT_MAROON,
-                .border = TFT_BLACK
+                .heading = TFT_BLACK
             }
         }
     },
