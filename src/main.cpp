@@ -5,6 +5,7 @@
 #include <sdcard.hpp>
 
 #include <list>
+#include <string_view>
 
 #include "ec1834.hpp"
 #include "widget.hpp"
@@ -75,9 +76,11 @@ static void onLedUpdate(void *event_handler_arg,
   }
 }
 
-#define PASSKEY_THEME_DEFAULT robotron
+static constexpr std::string_view themeDefault_ = "robotron";
 #ifndef PASSKEY_THEME
-    #define PASSKEY_THEME PASSKEY_THEME_DEFAULT
+    static constexpr std::string_view themeSet_ = themeDefault_;
+#else 
+    static constexpr std::string_view themeSet_ = PASSKEY_STRINGIZE(PASSKEY_THEME);
 #endif // PASSKEY_THEME
 
 
@@ -108,7 +111,7 @@ void setup()
     application = new UI::Application();
     try
     {
-        if constexpr (PASSKEY_STRINGIZE(PASSKEY_THEME) == "random")
+        if constexpr (themeSet_ == "random")
         {
 	      auto it = UI::themes().begin();
 	      std::advance(it, random(UI::themes().size()));
@@ -116,13 +119,13 @@ void setup()
         }
         else
         {
-	      UI::Theme const& theme = UI::themes().at(PASSKEY_STRINGIZE(PASSKEY_THEME));
+	      UI::Theme const& theme = UI::themes().at(String(themeSet_.data()));
 	      setupThemedElements(theme, fullScreen, menuItems, application);
         }
     }
     catch (std::out_of_range)
     {
-        UI::Theme const& theme = UI::themes().at(PASSKEY_STRINGIZE(PASSKEY_THEME_DEFAULT));
+        UI::Theme const& theme = UI::themes().at(String(themeDefault_.data()));
         setupThemedElements(theme, fullScreen, menuItems, application);
     }
     keyboard = new UsbKeyboard(false);

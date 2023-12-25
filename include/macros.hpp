@@ -1,5 +1,7 @@
 #pragma  once
 
+#include <string_view>
+
 /** PASSKEY_STRINGIZE
  *
  * @brief Make a string out of regular text
