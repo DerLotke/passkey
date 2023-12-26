@@ -41,27 +41,6 @@ static void loadDirectoryContent(void)
   }
 }
 
-#if 0
-static void onMenuSelected(void *event_handler_arg,
-                           esp_event_base_t event_base,
-                           int32_t event_id,
-                           void *event_data)
-{
-   if(event_base == MENU_EVENT)
-   {
-      UI::AbstractMenuBar::EventData *eventData = reinterpret_cast<UI::AbstractMenuBar::EventData*>(event_data);
-
-      if(eventData)
-      {
-        if(eventData->self == vmenu)
-        {
-            KeyStrokeFile file(sdCard->open(vmenu->selectedItem(), SDCard::OpenMode::FILE_READONLY));
-            keyboard->sendKeyStrokes(file);
-        }
-      }
-   }
-}
-#endif
 
 static void onLedUpdate(void *event_handler_arg,
                            esp_event_base_t event_base,
