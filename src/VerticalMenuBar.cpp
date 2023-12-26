@@ -6,8 +6,7 @@ VerticalMenuBar::VerticalMenuBar(const AbstractMenuBar::MenuItems &menuItems,
                         Rect area,
                         unsigned selected = 0,
                         Widget * const parent = nullptr
-                        ): AbstractMenuBar(menuItems, selected),
-                           Widget(area, parent)
+                        ): AbstractMenuBar(menuItems, area, selected, parent)
 {
     for(unsigned i=0; i< itemsOnDisplay(); ++i)
     {

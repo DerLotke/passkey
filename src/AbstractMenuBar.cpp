@@ -4,10 +4,14 @@ ESP_EVENT_DEFINE_BASE(MENU_EVENT);
 
 namespace UI
 {
-    AbstractMenuBar::AbstractMenuBar(const std::vector<String> &menuItems,
-                                     unsigned selected):
-                                     items_(menuItems),
-                                     selectedItem_(selected)
+    AbstractMenuBar::AbstractMenuBar(
+		    	const AbstractMenuBar::MenuItems &menuItems,
+                        Rect area,
+                        unsigned selected,
+                        Widget * const parent) :
+	    		    Widget(area, parent),
+                            items_(menuItems),
+                            selectedItem_(selected)
     {
         esp_event_handler_register(KEYBOARD_EVENT,
                                    ESP_EVENT_ANY_ID,

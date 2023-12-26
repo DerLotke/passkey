@@ -8,6 +8,7 @@
 #include <Arduino.h>
 #include <list>
 #include <vector>
+#include <set>
 #include <memory>
 #include <functional>
 
@@ -16,7 +17,14 @@
 ESP_EVENT_DECLARE_BASE(MENU_EVENT);
 
 namespace UI {
-    class AbstractMenuBar
+
+void espMenuEventHandler(
+    void *event_handler_arg,
+    esp_event_base_t event_base,
+    int32_t event_id,
+    void *event_data);
+
+    class AbstractMenuBar : public Widget
     {
         public:
 
@@ -31,8 +39,10 @@ namespace UI {
 
         typedef std::vector<String> MenuItems;
 
-        AbstractMenuBar(const MenuItems &menuItems,
-                        unsigned selected = 0);
+        AbstractMenuBar(const AbstractMenuBar::MenuItems &menuItems,
+                        Rect area,
+                        unsigned selected,
+                        Widget * const parent);
 
         virtual ~AbstractMenuBar();
 
@@ -66,31 +76,51 @@ namespace UI {
 	    void(AbstractMenuBar&, UI::AbstractMenuBar::EventData const&)
 	>;
 	public:
+	    static std::set<Menu*> menus_;
+
+	public:
 	    template<class MenuBarClass, class... Args>
 	    Menu(
+		std::in_place_type_t<MenuBarClass>,
 		EventHandler menuEventHandler,
 		Widget * const parent,
 		Args... menuBarArgs) :
 		    menuBar_(std::move(
-			std::make_unique<MenuBarClass>(menuBarArgs..., this))),
+			std::make_unique<MenuBarClass>(menuBarArgs..., parent))), // FIXME this needs to be a this
 		    menuEventHandler_(menuEventHandler),
-		    parent_(parent) {}
-	    
+		    parent_(parent)
+	    {
+		static bool once = true;
+		menuBar_->setHidden(true);
+		menus_.insert(this);
+		if (once)
+		{
+		    once = false;
+    		    esp_event_handler_register(
+		        MENU_EVENT,
+		        ESP_EVENT_ANY_ID,
+		        &espMenuEventHandler,
+		        NULL);
+		}
+	    }
+
 	    ~Menu();
 
-	private:
-	    std::unique_ptr<AbstractMenuBar> menuBar_;
-	    EventHandler menuEventHandler_;
-	    Widget * const parent_;
+	    void makeActive();
 
 	    void onEvent(
 	        void *event_handler_arg,
         	esp_event_base_t event_base,
                 int32_t event_id,
                 void *event_data);
+
+	private:
+	    std::unique_ptr<AbstractMenuBar> menuBar_;
+	    EventHandler menuEventHandler_;
+	    Widget * const parent_;
     };
 
-    class VerticalMenuBar: public AbstractMenuBar, public Widget
+    class VerticalMenuBar: public AbstractMenuBar
     {
         public:
             explicit VerticalMenuBar(const AbstractMenuBar::MenuItems &menuItems,
@@ -120,5 +150,8 @@ namespace UI {
             std::shared_ptr<Label> downLabel_;
 
             void updateDisplayedLabels();
+
     };
+
+    static std::in_place_type_t<VerticalMenuBar> VerticalMenu;
 }

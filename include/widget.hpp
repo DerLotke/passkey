@@ -21,6 +21,9 @@ namespace UI {
 
         virtual void setTheme(Theme const& theme) { faceColor_ = theme.colors.background; }
 
+	void setHidden(bool hidden) { hidden_ = hidden; }
+	bool isHidden() { return hidden_; }
+
         void moveTo(int x, int y) { area_.x = x; area_.y = y; }
 
         protected:
@@ -31,5 +34,6 @@ namespace UI {
         Widget * child_;
         Widget * nextSibbling_;
         Color faceColor_;
+	bool hidden_;
     };
 }

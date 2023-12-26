@@ -17,11 +17,12 @@
 #include "macros.hpp"
 
 static UI::Application *application;
-static UI::VerticalMenuBar *vmenu;
+static UI::Menu * typekeyMenu;
 static Statusbar *statusBar;
 static SDCard *sdCard;
 static UI::AbstractMenuBar::MenuItems menuItems;
 static UsbKeyboard *keyboard;
+
 
 static void loadDirectoryContent(void)
 {
@@ -40,6 +41,7 @@ static void loadDirectoryContent(void)
   }
 }
 
+#if 0
 static void onMenuSelected(void *event_handler_arg,
                            esp_event_base_t event_base,
                            int32_t event_id,
@@ -59,6 +61,7 @@ static void onMenuSelected(void *event_handler_arg,
       }
    }
 }
+#endif
 
 static void onLedUpdate(void *event_handler_arg,
                            esp_event_base_t event_base,
@@ -91,18 +94,28 @@ static void setupThemedElements(
 	UI::Application * parent)
 {
     statusBar = new Statusbar(0, theme, parent);
-    vmenu = new UI::VerticalMenuBar(items,
-				 UI::Rect(0,1,screen.width, screen.height - 1),
-				 theme,
-				 0,
-				 parent);
+    typekeyMenu = new UI::Menu( UI::VerticalMenu,
+        [](
+	    UI::AbstractMenuBar& menuBar,
+	    UI::AbstractMenuBar::EventData const& eventData)
+	{
+            KeyStrokeFile file(sdCard->open(menuBar.selectedItem(), SDCard::OpenMode::FILE_READONLY));
+            keyboard->sendKeyStrokes(file);
+	},
+	parent,
+	/* VerticalMenuBar args from here */
+	items,
+	UI::Rect(0, 1, screen.width, screen.height - 1),
+	theme,
+	0
+    );
+    typekeyMenu->makeActive();
 }
 
 
 void setup()
 {
     esp_event_loop_create_default();
-    esp_event_handler_register(MENU_EVENT,ESP_EVENT_ANY_ID, onMenuSelected, NULL);
     esp_event_handler_register(KEYBOARD_EVENT,UsbKeyboard::LedsUpdated, onLedUpdate, NULL);
 
     sdCard = new SDCard();
