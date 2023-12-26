@@ -17,7 +17,7 @@
 #include "macros.hpp"
 
 static UI::Application *application;
-static UI::VerticalMenu *vmenu;
+static UI::VerticalMenuBar *vmenu;
 static Statusbar *statusBar;
 static SDCard *sdCard;
 static UI::AbstractMenuBar::MenuItems menuItems;
@@ -91,7 +91,7 @@ static void setupThemedElements(
 	UI::Application * parent)
 {
     statusBar = new Statusbar(0, theme, parent);
-    vmenu = new UI::VerticalMenu(items,
+    vmenu = new UI::VerticalMenuBar(items,
 				 UI::Rect(0,1,screen.width, screen.height - 1),
 				 theme,
 				 0,

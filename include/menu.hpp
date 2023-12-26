@@ -9,6 +9,7 @@
 #include <list>
 #include <vector>
 #include <memory>
+#include <functional>
 
 #include <esp_event.h>
 
@@ -59,22 +60,52 @@ namespace UI {
 
     };
 
-    class VerticalMenu: public AbstractMenuBar, public Widget
+    class Menu
+    {
+	using EventHandler = typename std::function<
+	    void(AbstractMenuBar&, UI::AbstractMenuBar::EventData const&)
+	>;
+	public:
+	    template<class MenuBarClass, class... Args>
+	    Menu(
+		EventHandler menuEventHandler,
+		Widget * const parent,
+		Args... menuBarArgs) :
+		    menuBar_(std::move(
+			std::make_unique<MenuBarClass>(menuBarArgs..., this))),
+		    menuEventHandler_(menuEventHandler),
+		    parent_(parent) {}
+	    
+	    ~Menu();
+
+	private:
+	    std::unique_ptr<AbstractMenuBar> menuBar_;
+	    EventHandler menuEventHandler_;
+	    Widget * const parent_;
+
+	    void onEvent(
+	        void *event_handler_arg,
+        	esp_event_base_t event_base,
+                int32_t event_id,
+                void *event_data);
+    };
+
+    class VerticalMenuBar: public AbstractMenuBar, public Widget
     {
         public:
-            explicit VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
+            explicit VerticalMenuBar(const AbstractMenuBar::MenuItems &menuItems,
                         Rect area,
                         unsigned selected,
                         Widget * const parent
                         );
-            explicit VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
+            explicit VerticalMenuBar(const AbstractMenuBar::MenuItems &menuItems,
                         Rect area,
                         Theme const& theme,
                         unsigned selected,
                         Widget * const parent
                         );
 
-            ~VerticalMenu();
+            ~VerticalMenuBar();
 
             void selectNext() override;
             void selectPrevious() override;
