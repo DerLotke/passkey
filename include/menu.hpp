@@ -104,7 +104,7 @@ void espMenuEventHandler(
 		}
 	    }
 
-	    ~Menu();
+	    virtual ~Menu();
 
 	    void makeActive();
 

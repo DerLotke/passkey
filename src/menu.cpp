@@ -22,25 +22,7 @@ void UI::espMenuEventHandler(
 
 Menu::~Menu()
 {
-#if 0
-	if (parent_) {
-	    Widget * previousChild = nullptr;
-	    Widget * child = parent_->child_;
-
-	    while(child && child != this) {
-		previousChild = child;
-		child = child ->nextSibbling_;
-	    }
-
-	    if(previousChild && child) {
-		previousChild ->nextSibbling_ = nextSibbling_;
-	    } else if( child ) {
-		parent_->child_ = nextSibbling_;
-	    } // else the child was not found which would be an
-	      // inconsistency error and should never happen
-	}
-#endif
-	menus_.erase(this);
+    menus_.erase(this);
 }
 
 
