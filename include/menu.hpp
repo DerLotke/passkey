@@ -87,9 +87,9 @@ void espMenuEventHandler(
 	public:
 	    template<class MenuBarClass, class... Args>
 	    Menu(
-		std::in_place_type_t<MenuBarClass>,
 		EventHandler menuEventHandler,
 		Widget * const parent,
+		std::in_place_type_t<MenuBarClass>,
 		Args... menuBarArgs) :
 		    DrawDelegator(parent),
 		    menuBar_(std::move(

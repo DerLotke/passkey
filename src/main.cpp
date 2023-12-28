@@ -73,7 +73,7 @@ static void setupThemedElements(
 	UI::Application * const parent)
 {
     statusBar = new Statusbar(0, theme, parent);
-    typekeyMenu = new UI::Menu( UI::VerticalMenu,
+    typekeyMenu = new UI::Menu(
         [](
 	    UI::AbstractMenuBar& menuBar,
 	    UI::AbstractMenuBar::EventData const& eventData)
@@ -82,7 +82,8 @@ static void setupThemedElements(
             keyboard->sendKeyStrokes(file);
 	},
 	parent,
-	/* VerticalMenuBar args from here */
+	/* VerticalMenuBar initialization starting from here */
+	UI::VerticalMenu,
 	items,
 	UI::Rect(0, 1, screen.width, screen.height - 1),
 	theme,
