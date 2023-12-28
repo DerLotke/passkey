@@ -26,13 +26,15 @@ namespace UI {
 
         void moveTo(int x, int y) { area_.x = x; area_.y = y; }
 
+	Widget const * getSibling() const {return nextSibling_;}
+
         protected:
         virtual void draw(TFT_eSprite &drawBuffer, const Rect &clientArea) const;
 
         Rect area_;
         Widget * parent_;
         Widget * child_;
-        Widget * nextSibbling_;
+        Widget * nextSibling_;
         Color faceColor_;
 	bool hidden_;
     };

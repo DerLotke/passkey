@@ -1,6 +1,7 @@
 #pragma once
 
 #include <widget.hpp>
+#include <draw_delegator.hpp>
 #include <label.hpp>
 #include <keyboard.hpp>
 #include <themes.hpp>
@@ -70,13 +71,18 @@ void espMenuEventHandler(
 
     };
 
-    class Menu
+    class Menu : public DrawDelegator
     {
 	using EventHandler = typename std::function<
 	    void(AbstractMenuBar&, UI::AbstractMenuBar::EventData const&)
 	>;
-	public:
+	private:
 	    static std::set<Menu*> menus_;
+	    friend void espMenuEventHandler(
+			void *event_handler_arg,
+			esp_event_base_t event_base,
+			int32_t event_id,
+			void *event_data);
 
 	public:
 	    template<class MenuBarClass, class... Args>
@@ -85,10 +91,10 @@ void espMenuEventHandler(
 		EventHandler menuEventHandler,
 		Widget * const parent,
 		Args... menuBarArgs) :
+		    DrawDelegator(parent),
 		    menuBar_(std::move(
-			std::make_unique<MenuBarClass>(menuBarArgs..., parent))), // FIXME this needs to be a this
-		    menuEventHandler_(menuEventHandler),
-		    parent_(parent)
+			std::make_unique<MenuBarClass>(menuBarArgs..., this))),
+		    menuEventHandler_(menuEventHandler)
 	    {
 		static bool once = true;
 		menuBar_->setHidden(true);
@@ -117,7 +123,6 @@ void espMenuEventHandler(
 	private:
 	    std::unique_ptr<AbstractMenuBar> menuBar_;
 	    EventHandler menuEventHandler_;
-	    Widget * const parent_;
     };
 
     class VerticalMenuBar: public AbstractMenuBar

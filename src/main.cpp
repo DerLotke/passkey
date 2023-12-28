@@ -70,7 +70,7 @@ static void setupThemedElements(
 	UI::Theme const& theme,
 	UI::Rect const& screen,
 	UI::AbstractMenuBar::MenuItems const& items,
-	UI::Application * parent)
+	UI::Application * const parent)
 {
     statusBar = new Statusbar(0, theme, parent);
     typekeyMenu = new UI::Menu( UI::VerticalMenu,
