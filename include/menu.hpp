@@ -53,6 +53,9 @@ void espMenuEventHandler(
         virtual String selectedItem() const { return items_[selectedItem_]; }
         virtual unsigned selectedIndex() const {return selectedItem_; }
 
+	virtual void setHandleInput(bool useInput);
+	virtual bool isHandlingInput() const;
+
         protected:
 
         MenuItems items_;
@@ -68,7 +71,6 @@ void espMenuEventHandler(
         private:
         void onKeyboardEvent(UsbKeyboard::Events event);
         static void keyboardEventHandler( void* event_handler_arg, esp_event_base_t event_base,  int32_t event_id, void* event_data);
-
     };
 
     class Menu : public DrawDelegator

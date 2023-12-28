@@ -15,7 +15,10 @@ void UI::espMenuEventHandler(
     // of a function ptr
     for (Menu* menu : Menu::menus_)
     {
-        menu->onEvent(event_handler_arg, event_base, event_id, event_data);
+	if (!menu->isHidden())
+	{
+            menu->onEvent(event_handler_arg, event_base, event_id, event_data);
+	}
     }
 };
 
@@ -50,6 +53,8 @@ void Menu::makeActive()
     for (Menu* menu : menus_)
     {
 	menu->menuBar_->setHidden(true);
+        menu->menuBar_->setHandleInput(false);
     }
     menuBar_->setHidden(false);
+    menuBar_->setHandleInput(true);
 }
