@@ -9,7 +9,6 @@ namespace UI
      * but does not perform a draw action themselves.
      *
      * This class needs to be inherited by another class.
-     * Also, the consumed drawable needs to be owned by inheritor.
      */ 
     class DrawDelegator : public Widget
     {
