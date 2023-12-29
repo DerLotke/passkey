@@ -18,7 +18,6 @@
 
 static UI::Application *application;
 static UI::Menu * typekeyMenu;
-static UI::Menu * etcMenu;
 static Statusbar *statusBar;
 static SDCard *sdCard;
 static UI::AbstractMenuBar::MenuItems menuItems;
@@ -79,8 +78,8 @@ static void setupThemedElements(
 	    UI::AbstractMenuBar& menuBar,
 	    UI::AbstractMenuBar::EventData const& eventData)
 	{
-            KeyStrokeFile file(sdCard->open(menuBar.selectedItem(), SDCard::OpenMode::FILE_READONLY));
-            keyboard->sendKeyStrokes(file);
+	    KeyStrokeFile file(sdCard->open(menuBar.selectedItem(), SDCard::OpenMode::FILE_READONLY));
+	    keyboard->sendKeyStrokes(file);
 	},
 	parent,
 	/* VerticalMenuBar initialization starting from here */
@@ -90,32 +89,7 @@ static void setupThemedElements(
 	theme,
 	0
     );
-    etcMenu = new UI::Menu(
-        [](
-	    UI::AbstractMenuBar& menuBar,
-	    UI::AbstractMenuBar::EventData const& eventData)
-	{
-	    if (menuBar.selectedItem() ==  "mount")
-	    {
-	    }
-	    else if (menuBar.selectedItem() ==  "unmount")
-	    {
-	    }
-	    else if (menuBar.selectedItem() ==  "convert")
-	    {
-	    }
-	},
-	parent,
-	/* VerticalMenuBar initialization starting from here */
-	UI::VerticalMenu,
-	UI::AbstractMenuBar::MenuItems{"mount", "unmount", "convert"},
-	UI::Rect(0, 1, screen.width, screen.height - 1),
-	theme,
-	0
-    );
-
     typekeyMenu->makeActive();
-    etcMenu->makeActive();
 }
 
 
