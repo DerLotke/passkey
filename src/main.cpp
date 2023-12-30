@@ -17,11 +17,12 @@
 #include "macros.hpp"
 
 static UI::Application *application;
-static UI::VerticalMenu *vmenu;
+static UI::Menu * typekeyMenu;
 static Statusbar *statusBar;
 static SDCard *sdCard;
 static UI::AbstractMenuBar::MenuItems menuItems;
 static UsbKeyboard *keyboard;
+
 
 static void loadDirectoryContent(void)
 {
@@ -40,25 +41,6 @@ static void loadDirectoryContent(void)
   }
 }
 
-static void onMenuSelected(void *event_handler_arg,
-                           esp_event_base_t event_base,
-                           int32_t event_id,
-                           void *event_data)
-{
-   if(event_base == MENU_EVENT)
-   {
-      UI::AbstractMenuBar::EventData *eventData = reinterpret_cast<UI::AbstractMenuBar::EventData*>(event_data);
-
-      if(eventData)
-      {
-        if(eventData->self == vmenu)
-        {
-            KeyStrokeFile file(sdCard->open(vmenu->selectedItem(), SDCard::OpenMode::FILE_READONLY));
-            keyboard->sendKeyStrokes(file);
-        }
-      }
-   }
-}
 
 static void onLedUpdate(void *event_handler_arg,
                            esp_event_base_t event_base,
@@ -88,22 +70,33 @@ static void setupThemedElements(
 	UI::Theme const& theme,
 	UI::Rect const& screen,
 	UI::AbstractMenuBar::MenuItems const& items,
-	UI::Application * parent)
+	UI::Application * const parent)
 {
     statusBar = new Statusbar(0, theme, parent);
-    vmenu = new UI::VerticalMenu(items,
-				 UI::Rect(0,1,screen.width, screen.height - 1),
-				 theme,
-				 0,
-				 parent);
+    typekeyMenu = new UI::Menu(
+        [](
+	    UI::AbstractMenuBar& menuBar,
+	    UI::AbstractMenuBar::EventData const& eventData)
+	{
+	    KeyStrokeFile file(sdCard->open(menuBar.selectedItem(), SDCard::OpenMode::FILE_READONLY));
+	    keyboard->sendKeyStrokes(file);
+	},
+	parent,
+	/* VerticalMenuBar initialization starting from here */
+	UI::VerticalMenu,
+	items,
+	UI::Rect(0, 1, screen.width, screen.height - 1),
+	theme,
+	0
+    );
+    typekeyMenu->makeActive();
 }
 
 
 void setup()
 {
     esp_event_loop_create_default();
-    esp_event_handler_register(MENU_EVENT,ESP_EVENT_ANY_ID, onMenuSelected, NULL);
-    esp_event_handler_register(KEYBOARD_EVENT,UsbKeyboard::LedsUpdated, onLedUpdate, NULL);
+    esp_event_handler_register(KEYBOARD_EVENT, UsbKeyboard::LedsUpdated, onLedUpdate, NULL);
 
     sdCard = new SDCard();
     loadDirectoryContent();

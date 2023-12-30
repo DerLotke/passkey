@@ -1,6 +1,7 @@
 #pragma once
 
 #include <widget.hpp>
+#include <draw_delegator.hpp>
 #include <label.hpp>
 #include <keyboard.hpp>
 #include <themes.hpp>
@@ -8,14 +9,23 @@
 #include <Arduino.h>
 #include <list>
 #include <vector>
+#include <set>
 #include <memory>
+#include <functional>
 
 #include <esp_event.h>
 
 ESP_EVENT_DECLARE_BASE(MENU_EVENT);
 
 namespace UI {
-    class AbstractMenuBar
+
+void espMenuEventHandler(
+    void *event_handler_arg,
+    esp_event_base_t event_base,
+    int32_t event_id,
+    void *event_data);
+
+    class AbstractMenuBar : public Widget
     {
         public:
 
@@ -30,8 +40,10 @@ namespace UI {
 
         typedef std::vector<String> MenuItems;
 
-        AbstractMenuBar(const MenuItems &menuItems,
-                        unsigned selected = 0);
+        AbstractMenuBar(const AbstractMenuBar::MenuItems &menuItems,
+                        Rect area,
+                        unsigned selected,
+                        Widget * const parent);
 
         virtual ~AbstractMenuBar();
 
@@ -40,6 +52,9 @@ namespace UI {
         virtual void entryChoosen();
         virtual String selectedItem() const { return items_[selectedItem_]; }
         virtual unsigned selectedIndex() const {return selectedItem_; }
+
+	virtual void setHandleInput(bool useInput);
+	virtual bool isHandlingInput() const;
 
         protected:
 
@@ -56,25 +71,78 @@ namespace UI {
         private:
         void onKeyboardEvent(UsbKeyboard::Events event);
         static void keyboardEventHandler( void* event_handler_arg, esp_event_base_t event_base,  int32_t event_id, void* event_data);
-
     };
 
-    class VerticalMenu: public AbstractMenuBar, public Widget
+    class Menu : public DrawDelegator
+    {
+	using EventHandler = typename std::function<
+	    void(AbstractMenuBar&, UI::AbstractMenuBar::EventData const&)
+	>;
+	private:
+	    static std::set<Menu*> menus_;
+	    friend void espMenuEventHandler(
+			void *event_handler_arg,
+			esp_event_base_t event_base,
+			int32_t event_id,
+			void *event_data);
+
+	public:
+	    template<class MenuBarClass, class... Args>
+	    Menu(
+		EventHandler menuEventHandler,
+		Widget * const parent,
+		std::in_place_type_t<MenuBarClass>,
+		Args... menuBarArgs) :
+		    DrawDelegator(parent),
+		    menuBar_(std::move(
+			std::make_unique<MenuBarClass>(menuBarArgs..., this))),
+		    menuEventHandler_(menuEventHandler)
+	    {
+		static bool once = true;
+		menuBar_->setHidden(true);
+		menus_.insert(this);
+		if (once)
+		{
+		    once = false;
+    		    esp_event_handler_register(
+		        MENU_EVENT,
+		        ESP_EVENT_ANY_ID,
+		        &espMenuEventHandler,
+		        NULL);
+		}
+	    }
+
+	    virtual ~Menu();
+
+	    void makeActive();
+
+	    void onEvent(
+	        void *event_handler_arg,
+        	esp_event_base_t event_base,
+                int32_t event_id,
+                void *event_data);
+
+	private:
+	    std::unique_ptr<AbstractMenuBar> menuBar_;
+	    EventHandler menuEventHandler_;
+    };
+
+    class VerticalMenuBar: public AbstractMenuBar
     {
         public:
-            explicit VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
+            explicit VerticalMenuBar(const AbstractMenuBar::MenuItems &menuItems,
                         Rect area,
                         unsigned selected,
                         Widget * const parent
                         );
-            explicit VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
+            explicit VerticalMenuBar(const AbstractMenuBar::MenuItems &menuItems,
                         Rect area,
                         Theme const& theme,
                         unsigned selected,
                         Widget * const parent
                         );
 
-            ~VerticalMenu();
+            ~VerticalMenuBar();
 
             void selectNext() override;
             void selectPrevious() override;
@@ -89,5 +157,8 @@ namespace UI {
             std::shared_ptr<Label> downLabel_;
 
             void updateDisplayedLabels();
+
     };
+
+    static std::in_place_type_t<VerticalMenuBar> VerticalMenu;
 }

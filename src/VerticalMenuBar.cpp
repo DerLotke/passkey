@@ -2,12 +2,11 @@
 
 namespace UI {
 
-VerticalMenu::VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
+VerticalMenuBar::VerticalMenuBar(const AbstractMenuBar::MenuItems &menuItems,
                         Rect area,
                         unsigned selected = 0,
                         Widget * const parent = nullptr
-                        ): AbstractMenuBar(menuItems, selected),
-                           Widget(area, parent)
+                        ): AbstractMenuBar(menuItems, area, selected, parent)
 {
     for(unsigned i=0; i< itemsOnDisplay(); ++i)
     {
@@ -20,17 +19,17 @@ VerticalMenu::VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
     updateDisplayedLabels();
 }
 
-VerticalMenu::VerticalMenu(const AbstractMenuBar::MenuItems &menuItems,
+VerticalMenuBar::VerticalMenuBar(const AbstractMenuBar::MenuItems &menuItems,
                         Rect area,
                         Theme const& theme,
                         unsigned selected = 0,
                         Widget * const parent = nullptr
-                        ): VerticalMenu(menuItems, area, selected, parent)
+                        ): VerticalMenuBar(menuItems, area, selected, parent)
 {
     setTheme(theme);
 }
 
-VerticalMenu::~VerticalMenu()
+VerticalMenuBar::~VerticalMenuBar()
 {
     /*All this is not needed but I feel better that way*/
     menuLabel_.clear();
@@ -39,24 +38,24 @@ VerticalMenu::~VerticalMenu()
     downLabel_.reset();
 }
 
-unsigned VerticalMenu::itemsOnDisplay() const
+unsigned VerticalMenuBar::itemsOnDisplay() const
 {
     return area_.height;
 }
 
-void VerticalMenu::selectNext()
+void VerticalMenuBar::selectNext()
 {
     AbstractMenuBar::selectNext();
     updateDisplayedLabels();
 }
 
-void VerticalMenu::selectPrevious()
+void VerticalMenuBar::selectPrevious()
 {
     AbstractMenuBar::selectPrevious();
     updateDisplayedLabels();
 }
 
-void VerticalMenu::updateDisplayedLabels()
+void VerticalMenuBar::updateDisplayedLabels()
 {
     for(auto label: menuLabel_)
     {
@@ -92,7 +91,7 @@ void VerticalMenu::updateDisplayedLabels()
     }
 }
 
-void VerticalMenu::setTheme(Theme const& theme)
+void VerticalMenuBar::setTheme(Theme const& theme)
 {
     Widget::setTheme(theme);
     for (std::shared_ptr<Label> menuLabel : menuLabel_)

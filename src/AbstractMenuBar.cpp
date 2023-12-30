@@ -1,25 +1,27 @@
 #include "menu.hpp"
 
+
 ESP_EVENT_DEFINE_BASE(MENU_EVENT);
 
 namespace UI
 {
-    AbstractMenuBar::AbstractMenuBar(const std::vector<String> &menuItems,
-                                     unsigned selected):
-                                     items_(menuItems),
-                                     selectedItem_(selected)
+    static AbstractMenuBar const * currentMenubarHandlingInput_ = nullptr;
+
+    AbstractMenuBar::AbstractMenuBar(
+		    	const AbstractMenuBar::MenuItems &menuItems,
+                        Rect area,
+                        unsigned selected,
+                        Widget * const parent) :
+	    		    Widget(area, parent),
+                            items_(menuItems),
+                            selectedItem_(selected)
     {
-        esp_event_handler_register(KEYBOARD_EVENT,
-                                   ESP_EVENT_ANY_ID,
-                                   AbstractMenuBar::keyboardEventHandler,
-                                   this);
+        // empty
     }
 
     AbstractMenuBar::~AbstractMenuBar()
     {
-        esp_event_handler_unregister(KEYBOARD_EVENT,
-                                     ESP_EVENT_ANY_ID,
-                                     AbstractMenuBar::keyboardEventHandler);
+        setHandleInput(false);
     }
 
     unsigned AbstractMenuBar::firstItemToDisplay() const
@@ -71,6 +73,35 @@ namespace UI
         esp_event_post(MENU_EVENT, ItemSelected, &data, sizeof(EventData), 0);
     }
 
+    void AbstractMenuBar::setHandleInput(bool useInput)
+    {
+        if (currentMenubarHandlingInput_ != this)
+        {
+            if (useInput)
+            {
+                esp_event_handler_register(KEYBOARD_EVENT,
+                                           ESP_EVENT_ANY_ID,
+                                           AbstractMenuBar::keyboardEventHandler,
+                                           this);
+                currentMenubarHandlingInput_ = this;
+            }
+        }
+        else 
+        {
+            if (!useInput)
+            {
+                esp_event_handler_unregister(KEYBOARD_EVENT,
+                                             ESP_EVENT_ANY_ID,
+                                             AbstractMenuBar::keyboardEventHandler);
+                currentMenubarHandlingInput_ = nullptr;
+            }
+        }
+    }
+
+    bool AbstractMenuBar::isHandlingInput() const
+    {
+        return currentMenubarHandlingInput_ == this;
+    }
 
     void AbstractMenuBar::onKeyboardEvent(UsbKeyboard::Events event)
     {
