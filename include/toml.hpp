@@ -1,8 +1,12 @@
 //----------------------------------------------------------------------------------------------------------------------
 //
-// toml++ v3.4.0
+// toml++ v3.4.0.passkey1
 // https://github.com/marzer/tomlplusplus
 // SPDX-License-Identifier: MIT
+//
+// Note: This was changed and adjusted for the passkey project.
+// Changelog:
+//     - passkey1: added TOML_NO_OVERALIGN to deactive overalignment
 //
 //----------------------------------------------------------------------------------------------------------------------
 //
@@ -12672,7 +12676,7 @@ TOML_ANON_NAMESPACE_START
 
 #endif
 
-#if defined(__APPLE__) || defined(__MINGW32__) || defined(__MINGW64__)
+#if defined(__APPLE__) || defined(__MINGW32__) || defined(__MINGW64__) || defined(TOML_NO_OVERALIGN)
 #define TOML_OVERALIGNED
 #else
 #define TOML_OVERALIGNED alignas(32)
