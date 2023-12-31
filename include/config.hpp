@@ -4,3 +4,4 @@
 #include <toml.hpp>
 
 toml::table& getConfig();
+void unloadConfig();

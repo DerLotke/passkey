@@ -31,13 +31,17 @@ toml::parse_result& getConfig()
 {
     if (loadedConfig_ == nullptr)
     {
-#if 0
 	try
 	{
 	    SDCard& source = SDCard::load();
 	    SDCard::SdCardFile file = source.open(
 	        String(configFile_.data()),
 		SDCard::OpenMode::FILE_READONLY);
+	    if (!file)
+	    {
+		loadedConfig_ = new toml::table(std::move(defaultConfig()));
+		return *loadedConfig_;
+	    }
 	    __gnu_cxx::stdio_filebuf<char> filebuf(file.get(), std::ios::in);
 	    std::istream is(&filebuf);
 	    loadedConfig_ = new toml::table(std::move(toml::parse(is)));
@@ -46,9 +50,16 @@ toml::parse_result& getConfig()
 	{
 	    loadedConfig_ = new toml::table(std::move(defaultConfig()));
 	}
-#else
-	loadedConfig_ = new toml::table(std::move(defaultConfig()));
-#endif
     }
     return *loadedConfig_;
+}
+
+
+void unloadConfig()
+{
+    if (loadedConfig_ != nullptr)
+    {
+	delete loadedConfig_;
+	loadedConfig_ = nullptr;
+    }
 }
