@@ -19,7 +19,6 @@ class SDCard
         typedef std::shared_ptr<FILE> SdCardFile;
         typedef std::shared_ptr<DIR> SdCardDirectory;
 
-        SDCard();
         ~SDCard();
 
         bool sdCardLoaded() const { return sdcardOk_; }
@@ -27,7 +26,12 @@ class SDCard
         SdCardFile open(const String &filename, OpenMode const mode) const;
         SdCardDirectory openDir(const String &pathName);
 
+	static SDCard& load();
+	static void unload();
+
     private:
+        SDCard();
+
         SdCardData *card_;
         bool sdcardOk_;
 };

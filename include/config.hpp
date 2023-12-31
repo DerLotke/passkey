@@ -5,6 +5,4 @@
 #endif
 #include <toml.hpp>
 
-class SDCard;
-
-toml::table& getConfig(SDCard const& source);
+toml::table& getConfig();

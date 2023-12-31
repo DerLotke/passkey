@@ -98,7 +98,7 @@ void setup()
     esp_event_loop_create_default();
     esp_event_handler_register(KEYBOARD_EVENT, UsbKeyboard::LedsUpdated, onLedUpdate, NULL);
 
-    sdCard = new SDCard();
+    sdCard = &SDCard::load();
     loadDirectoryContent();
     UI::Rect fullScreen = UI::Application::getFullFrameRect();
     application = new UI::Application();

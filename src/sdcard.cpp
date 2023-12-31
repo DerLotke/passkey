@@ -4,6 +4,8 @@
 #include <sdmmc_cmd.h>
 #include <driver/sdmmc_host.h>
 
+static SDCard * loadedSDCard_ = nullptr;
+
 /* Hardware Config given here */
 constexpr gpio_num_t SD_MMC_D0_PIN() { return GPIO_NUM_14; }
 constexpr gpio_num_t SD_MMC_D1_PIN() { return GPIO_NUM_17; }
@@ -92,4 +94,22 @@ SDCard::SdCardDirectory SDCard::openDir(const String &pathName)
     }
 
     return result;
+}
+
+SDCard& SDCard::load()
+{
+    if (loadedSDCard_ == nullptr)
+    {
+	loadedSDCard_ = new SDCard;
+    }
+    return *loadedSDCard_;
+}
+
+void SDCard::unload()
+{
+    if (loadedSDCard_ != nullptr)
+    {
+	delete loadedSDCard_;
+	loadedSDCard_ = nullptr;
+    }
 }

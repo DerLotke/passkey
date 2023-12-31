@@ -1,7 +1,9 @@
 #include "keyboard.hpp"
+#include "config.hpp"
 
 #include <USBHID.h>
 #include <Arduino.h>
+
 
 ESP_EVENT_DEFINE_BASE(KEYBOARD_EVENT);
 
@@ -35,12 +37,14 @@ UsbKeyboard::UsbKeyboard(bool const skipUsb):
     if(!skipUsb) {
         keyBoard_.begin();
 
+	auto config = getConfig();
+
         USB.productName("PassKey");
         USB.manufacturerName("Falk Software");
         USB.serialNumber("1");
         USB.firmwareVersion(1);
-        USB.VID(0x413C); //Claim we are from DELL :P
-        USB.PID(0x2010); //A nice generic Keyboard
+        USB.VID(config["device"]["vendor_id"].value_or<uint16_t>(0x413c));
+	USB.PID(config["device"]["product_id"].value_or<uint16_t>(0x2010));
 
         USB.begin();
     }
@@ -70,7 +74,8 @@ void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const l
 
         if (changed.numlock)
         {
-            esp_event_post(KEYBOARD_EVENT, KeyUp,&tmp, sizeof(EventData),0);
+            // esp_event_post(KEYBOARD_EVENT, KeyUp,&tmp, sizeof(EventData),0);
+            esp_event_post(KEYBOARD_EVENT, KeySelect,&tmp, sizeof(EventData),0);
         }
 
         if (changed.scrolllock)
