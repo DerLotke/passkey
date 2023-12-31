@@ -1,6 +1,3 @@
-#define TOML_IMPLEMENTATION
-#include <toml.hpp> // Compile toml library in this compilation unit
-
 #include "config.hpp"
 #include "sdcard.hpp"
 
@@ -10,33 +7,31 @@
 #include <fstream>
 #include <string>
 
-
-using namespace std::literals::string_view_literals;
-
 constexpr std::string_view configFile_ = "passkey_config.toml";
 static toml::table * loadedConfig_ = nullptr;
 
 static toml::table defaultConfig() noexcept
 {
-    return toml::parse(R"(
-[device]
-vendor_id = 0x413c
-product_id = 0x2010
-
-[keys]
-forward = "W"
-backward = "S"
-confirm = "ENTER"
-cancel = "ESC"
-select = "SHIFT"
-
-)"sv);
+    return toml::table{
+	{"device", toml::table{
+	    {"vendor_id", 0x413c},
+	    {"product_id", 0x2010},
+        }},
+	{"keys", toml::table{
+	    {"forward", "W"},
+	    {"backward", "S"},
+	    {"confirm", "ENTER"},
+	    {"cancel", "ESC"},
+	    {"select", "SHIFT"}
+        }},
+    };
 }
 
 toml::parse_result& getConfig()
 {
     if (loadedConfig_ == nullptr)
     {
+#if 0
 	try
 	{
 	    SDCard& source = SDCard::load();
@@ -45,12 +40,15 @@ toml::parse_result& getConfig()
 		SDCard::OpenMode::FILE_READONLY);
 	    __gnu_cxx::stdio_filebuf<char> filebuf(file.get(), std::ios::in);
 	    std::istream is(&filebuf);
-	    *loadedConfig_ = toml::parse(is);
+	    loadedConfig_ = new toml::table(std::move(toml::parse(is)));
 	}
 	catch (const toml::parse_error&)
 	{
-	    *loadedConfig_ = defaultConfig();
+	    loadedConfig_ = new toml::table(std::move(defaultConfig()));
 	}
+#else
+	loadedConfig_ = new toml::table(std::move(defaultConfig()));
+#endif
     }
     return *loadedConfig_;
 }
