@@ -60,7 +60,7 @@ SDCard::~SDCard()
     }
 }
 
-SDCard::SdCardFile SDCard::open(const String &filename, OpenMode const mode)
+SDCard::SdCardFile SDCard::open(const String &filename, OpenMode const mode) const
 {
     SdCardFile result;
 

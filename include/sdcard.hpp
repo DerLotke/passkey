@@ -24,7 +24,7 @@ class SDCard
 
         bool sdCardLoaded() const { return sdcardOk_; }
 
-        SdCardFile open(const String &filename, OpenMode const mode);
+        SdCardFile open(const String &filename, OpenMode const mode) const;
         SdCardDirectory openDir(const String &pathName);
 
     private:
