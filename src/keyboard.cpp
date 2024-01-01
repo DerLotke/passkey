@@ -74,8 +74,7 @@ void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const l
 
         if (changed.numlock)
         {
-            // esp_event_post(KEYBOARD_EVENT, KeyUp,&tmp, sizeof(EventData),0);
-            esp_event_post(KEYBOARD_EVENT, KeySelect,&tmp, sizeof(EventData),0);
+            esp_event_post(KEYBOARD_EVENT, KeyUp,&tmp, sizeof(EventData),0);
         }
 
         if (changed.scrolllock)
