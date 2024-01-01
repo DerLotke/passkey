@@ -17,13 +17,6 @@ static toml::table defaultConfig() noexcept
 	    {"vendor_id", 0x413c},
 	    {"product_id", 0x2010},
         }},
-	{"keys", toml::table{
-	    {"forward", "W"},
-	    {"backward", "S"},
-	    {"confirm", "ENTER"},
-	    {"cancel", "ESC"},
-	    {"select", "SHIFT"}
-        }},
     };
 }
 
