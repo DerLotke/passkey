@@ -15,6 +15,7 @@
 #include "keyboard.hpp"
 #include "themes.hpp"
 #include "macros.hpp"
+#include "config.hpp"
 
 static UI::Application *application;
 static UI::Menu * typekeyMenu;
@@ -31,8 +32,12 @@ static void loadDirectoryContent(void)
   dirent *dir;
   while((dir = readdir(directory.get())))
   {
-      if(DT_REG == dir->d_type) {
-        menuItems.emplace_back(String(dir->d_name));
+      if(DT_REG == dir->d_type)
+      {
+            if (dir->d_name != configFileName())
+	    {
+                menuItems.emplace_back(String(dir->d_name));
+	    }
       }
   }
 

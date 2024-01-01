@@ -7,7 +7,7 @@
 #include <fstream>
 #include <string>
 
-constexpr std::string_view configFile_ = "passkey_config.toml";
+static constexpr std::string_view configFile_ = "passkey_config.toml";
 static toml::table * loadedConfig_ = nullptr;
 
 static toml::table defaultConfig() noexcept
@@ -62,4 +62,10 @@ void unloadConfig()
 	delete loadedConfig_;
 	loadedConfig_ = nullptr;
     }
+}
+
+
+std::string_view configFileName()
+{
+    return configFile_;
 }
