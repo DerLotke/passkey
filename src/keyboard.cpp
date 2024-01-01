@@ -43,7 +43,11 @@ UsbKeyboard::UsbKeyboard(bool const skipUsb):
         USB.manufacturerName("Falk Software");
         USB.serialNumber("1");
         USB.firmwareVersion(1);
+
+	// In default case, claim we are from DELL :P
         USB.VID(config["device"]["vendor_id"].value_or<uint16_t>(0x413c));
+
+	// In default case, this ID resembles a nice generic keyboard
 	USB.PID(config["device"]["product_id"].value_or<uint16_t>(0x2010));
 
         USB.begin();
