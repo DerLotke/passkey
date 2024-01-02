@@ -37,7 +37,7 @@ UsbKeyboard::UsbKeyboard(bool const skipUsb):
     if(!skipUsb) {
         keyBoard_.begin();
 
-	auto config = getConfig();
+	toml::table const config = getConfig();
 
         USB.productName("PassKey");
         USB.manufacturerName("Falk Software");
