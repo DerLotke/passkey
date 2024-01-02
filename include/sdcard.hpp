@@ -27,13 +27,13 @@ class SDCard
         SdCardFile open(const String &filename, OpenMode const mode) const;
         SdCardDirectory openDir(const String &pathName);
 
-	static SDCard& load();
+	static std::shared_ptr<SDCard> load();
 	static void unload();
 
     private:
         SDCard();
-	SDCard(std::in_place_t activate);
 
         SdCardData *card_;
         bool sdcardOk_;
+
 };

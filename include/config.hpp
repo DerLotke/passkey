@@ -10,7 +10,7 @@
  * This function attempts to load the SD card
  * and retrieve the configuration file.
  **/
-toml::table const& getConfig();
+std::shared_ptr<toml::table const> getConfig();
 
 /**
  * @brief Returns the expected filename of the configuration file.

@@ -27,11 +27,6 @@ struct SdCardData : public sdmmc_card_t
 SDCard::SDCard() : card_(nullptr),
                    sdcardOk_(false)
 {
-    // default SDCard is unloaded
-}
-
-SDCard::SDCard(std::in_place_t) : SDCard()
-{
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = true,
         .max_files = 5,
@@ -101,14 +96,16 @@ SDCard::SdCardDirectory SDCard::openDir(const String &pathName)
     return result;
 }
 
-SDCard& SDCard::load()
+std::shared_ptr<SDCard> SDCard::load()
 {
-    static SDCard sdCard;
-    static bool sdCardLoaded = false;
-    if (sdCardLoaded == false)
+    static std::shared_ptr<SDCard> sdCard(nullptr);
+    if (!sdCard)
     {
-	sdCard = std::move(SDCard(std::in_place_t{}));
-	sdCardLoaded = true;
+	// Can't use make_unique here because
+	// the constructor is private and
+	// making the shared_ptr a friend
+	// doesn't help
+	sdCard = std::shared_ptr<SDCard>(new SDCard());
     }
     return sdCard;
 }

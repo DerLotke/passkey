@@ -20,7 +20,7 @@
 static UI::Application *application;
 static UI::Menu * typekeyMenu;
 static Statusbar *statusBar;
-static SDCard *sdCard;
+static std::shared_ptr<SDCard> sdCard;
 static UI::AbstractMenuBar::MenuItems menuItems;
 static UsbKeyboard *keyboard;
 
@@ -103,7 +103,7 @@ void setup()
     esp_event_loop_create_default();
     esp_event_handler_register(KEYBOARD_EVENT, UsbKeyboard::LedsUpdated, onLedUpdate, NULL);
 
-    sdCard = &SDCard::load();
+    sdCard = SDCard::load();
     loadDirectoryContent();
     UI::Rect fullScreen = UI::Application::getFullFrameRect();
     application = new UI::Application();
