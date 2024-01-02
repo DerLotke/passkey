@@ -15,4 +15,4 @@ toml::table const& getConfig();
 /**
  * @brief Returns the expected filename of the configuration file.
  **/
-std::string_view configFileName();
+constexpr std::string_view configFileName() {return "passkey_config.toml";}

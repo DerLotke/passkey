@@ -7,7 +7,6 @@
 #include <fstream>
 #include <string>
 
-static constexpr std::string_view configFile_ = "passkey_config.toml";
 static toml::table loadedConfig_;
 static bool configLoaded_ = false;
 
@@ -21,7 +20,7 @@ static toml::table defaultConfig() noexcept
     };
 }
 
-toml::parse_result& getConfig()
+toml::table const& getConfig()
 {
     if (!configLoaded_)
     {
@@ -29,7 +28,7 @@ toml::parse_result& getConfig()
 	{
 	    SDCard& source = SDCard::load();
 	    SDCard::SdCardFile file = source.open(
-	        String(configFile_.data()),
+	        String(configFileName().data()),
 		SDCard::OpenMode::FILE_READONLY);
 	    if (!file)
 	    {
@@ -47,10 +46,4 @@ toml::parse_result& getConfig()
 	configLoaded_ = true;
     }
     return loadedConfig_;
-}
-
-
-std::string_view configFileName()
-{
-    return configFile_;
 }
