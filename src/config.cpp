@@ -20,28 +20,22 @@ static toml::table defaultConfig() noexcept
 
 std::shared_ptr<toml::table const> getConfig()
 {
-    static std::shared_ptr<toml::table const> loadedConfig_(nullptr);
-    if (!loadedConfig_)
+    try
     {
-	try
-	{
-	    std::shared_ptr<SDCard> source = SDCard::load();
-	    SDCard::SdCardFile file = source->open(
-	        String(configFileName().data()),
-		SDCard::OpenMode::FILE_READONLY);
-	    if (!file)
-	    {
-		loadedConfig_ = std::make_shared<toml::table>(std::move(defaultConfig()));
-		return loadedConfig_;
-	    }
-	    __gnu_cxx::stdio_filebuf<char> filebuf(file.get(), std::ios::in);
-	    std::istream is(&filebuf);
-	    loadedConfig_ = std::make_shared<toml::table>(std::move(toml::parse(is)));
-	}
-	catch (const toml::parse_error&)
-	{
-	    loadedConfig_ = std::make_shared<toml::table>(std::move(defaultConfig()));
-	}
+        std::shared_ptr<SDCard> source = SDCard::load();
+        SDCard::SdCardFile file = source->open(
+    	String(configFileName().data()),
+    	SDCard::OpenMode::FILE_READONLY);
+        if (!file)
+        {
+    	    return std::make_shared<toml::table>(std::move(defaultConfig()));
+        }
+        __gnu_cxx::stdio_filebuf<char> filebuf(file.get(), std::ios::in);
+        std::istream is(&filebuf);
+        return std::make_shared<toml::table>(std::move(toml::parse(is)));
     }
-    return loadedConfig_;
+    catch (const toml::parse_error&)
+    {
+        return std::make_shared<toml::table>(std::move(defaultConfig()));
+    }
 }
