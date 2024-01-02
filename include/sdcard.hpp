@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <memory>
+#include <utilit>
 
 struct SdCardData;
 
@@ -31,6 +32,7 @@ class SDCard
 
     private:
         SDCard();
+	SDCard(std::in_place_t activate);
 
         SdCardData *card_;
         bool sdcardOk_;

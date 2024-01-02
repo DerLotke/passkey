@@ -4,7 +4,6 @@
 #include <sdmmc_cmd.h>
 #include <driver/sdmmc_host.h>
 
-static SDCard * loadedSDCard_ = nullptr;
 
 /* Hardware Config given here */
 constexpr gpio_num_t SD_MMC_D0_PIN() { return GPIO_NUM_14; }
@@ -24,8 +23,14 @@ struct SdCardData : public sdmmc_card_t
 {
 };
 
+
 SDCard::SDCard() : card_(nullptr),
                    sdcardOk_(false)
+{
+    // default SDCard is unloaded
+}
+
+SDCard::SDCard(std::in_place_t) : SDCard()
 {
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = true,
@@ -98,18 +103,12 @@ SDCard::SdCardDirectory SDCard::openDir(const String &pathName)
 
 SDCard& SDCard::load()
 {
-    if (loadedSDCard_ == nullptr)
+    static SDCard sdCard;
+    static bool sdCardLoaded = false;
+    if (sdCardLoaded == false)
     {
-	loadedSDCard_ = new SDCard;
+	sdCard = std::move(SDCard(std::in_place_t{}));
+	sdCardLoaded = true;
     }
-    return *loadedSDCard_;
-}
-
-void SDCard::unload()
-{
-    if (loadedSDCard_ != nullptr)
-    {
-	delete loadedSDCard_;
-	loadedSDCard_ = nullptr;
-    }
+    return sdCard;
 }
