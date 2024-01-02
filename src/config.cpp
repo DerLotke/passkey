@@ -8,7 +8,8 @@
 #include <string>
 
 static constexpr std::string_view configFile_ = "passkey_config.toml";
-static toml::table * loadedConfig_ = nullptr;
+static toml::table loadedConfig_;
+static bool configLoaded_ = false;
 
 static toml::table defaultConfig() noexcept
 {
@@ -22,7 +23,7 @@ static toml::table defaultConfig() noexcept
 
 toml::parse_result& getConfig()
 {
-    if (loadedConfig_ == nullptr)
+    if (!configLoaded_)
     {
 	try
 	{
@@ -32,29 +33,20 @@ toml::parse_result& getConfig()
 		SDCard::OpenMode::FILE_READONLY);
 	    if (!file)
 	    {
-		loadedConfig_ = new toml::table(std::move(defaultConfig()));
-		return *loadedConfig_;
+		loadedConfig_ = std::move(toml::table(std::move(defaultConfig())));
+		return loadedConfig_;
 	    }
 	    __gnu_cxx::stdio_filebuf<char> filebuf(file.get(), std::ios::in);
 	    std::istream is(&filebuf);
-	    loadedConfig_ = new toml::table(std::move(toml::parse(is)));
+	    loadedConfig_ = std::move(toml::table(std::move(toml::parse(is))));
 	}
 	catch (const toml::parse_error&)
 	{
-	    loadedConfig_ = new toml::table(std::move(defaultConfig()));
+	    loadedConfig_ = std::move(toml::table(std::move(defaultConfig())));
 	}
+	configLoaded_ = true;
     }
-    return *loadedConfig_;
-}
-
-
-void unloadConfig()
-{
-    if (loadedConfig_ != nullptr)
-    {
-	delete loadedConfig_;
-	loadedConfig_ = nullptr;
-    }
+    return loadedConfig_;
 }
 
 
