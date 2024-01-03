@@ -5,7 +5,8 @@
 #include <driver/sdmmc_host.h>
 
 #include <ext/stdio_filebuf.h> 
-#include <fstream>
+#include <istream>
+#include <iostream>
 
 
 /* Hardware Config given here */
