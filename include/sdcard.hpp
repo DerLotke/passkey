@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 #include <mutex>
+#include <functional>
 
 struct SdCardData;
 
@@ -32,6 +33,7 @@ class SDCard
 	 * @brief Open a filestream and perform an operation with it
 	 *
 	 * The filestream is valid only during the duration of the call of op.
+	 * If the file does not exist the stream will be empty.
 	 *
 	 * @tparam FileStreamType Type of stream to open (either std::istream or std::iostream)
 	 * @param filename File to open
