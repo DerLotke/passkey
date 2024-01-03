@@ -6,6 +6,7 @@
 #include <dirent.h>
 #include <memory>
 #include <utility>
+#include <mutex>
 
 struct SdCardData;
 
@@ -35,5 +36,5 @@ class SDCard
 
         SdCardData *card_;
         bool sdcardOk_;
-
+	static std::mutex mutex_;
 };

@@ -13,6 +13,10 @@ constexpr gpio_num_t SD_MMC_D3_PIN() { return GPIO_NUM_18; }
 constexpr gpio_num_t SD_MMC_CLK_PIN() { return GPIO_NUM_12; }
 constexpr gpio_num_t SD_MMC_CMD_PIN() { return GPIO_NUM_16; }
 
+
+std::mutex SDCard::mutex_;
+
+
 constexpr const char *mountPoint()
 {
     return "/sdcard";
@@ -56,6 +60,7 @@ SDCard::SDCard() : card_(nullptr),
 
 SDCard::~SDCard()
 {
+    std::scoped_lock(mutex_);
     if (sdcardOk_ && card_)
     {
         esp_vfs_fat_sdcard_unmount(mountPoint(), card_);
@@ -64,6 +69,7 @@ SDCard::~SDCard()
 
 SDCard::SdCardFile SDCard::open(const String &filename, OpenMode const mode) const
 {
+    std::scoped_lock(mutex_);
     SdCardFile result;
 
     if (sdcardOk_)
@@ -82,6 +88,8 @@ SDCard::SdCardFile SDCard::open(const String &filename, OpenMode const mode) con
 
 SDCard::SdCardDirectory SDCard::openDir(const String &pathName)
 {
+    std::scoped_lock(mutex_);
+
     SdCardDirectory result;
 
     if(sdcardOk_)
@@ -98,6 +106,8 @@ SDCard::SdCardDirectory SDCard::openDir(const String &pathName)
 
 std::shared_ptr<SDCard> SDCard::load()
 {
+    std::scoped_lock(mutex_);
+
     static std::shared_ptr<SDCard> sdCard(nullptr);
     if (!sdCard)
     {
