@@ -2,9 +2,7 @@
 #include "sdcard.hpp"
 
 #include <string_view>
-#include <ext/stdio_filebuf.h> 
-#include <iostream>
-#include <fstream>
+#include <istream>
 #include <memory>
 
 
@@ -23,16 +21,25 @@ std::shared_ptr<toml::table const> getConfig()
     try
     {
         std::shared_ptr<SDCard> source = SDCard::load();
-        SDCard::SdCardFile file = source->open(
-    	String(configFileName().data()),
-    	SDCard::OpenMode::FILE_READONLY);
-        if (!file)
-        {
-    	    return std::make_shared<toml::table>(std::move(defaultConfig()));
-        }
-        __gnu_cxx::stdio_filebuf<char> filebuf(file.get(), std::ios::in);
-        std::istream is(&filebuf);
-        return std::make_shared<toml::table>(std::move(toml::parse(is)));
+	std::shared_ptr<toml::table> tablePointer(nullptr);
+        source->openFileStream<std::istream>(
+	    String(configFileName().data()),
+	    [&tablePointer](std::istream& is){
+	        if (is.peek() == EOF)
+		{
+		    tablePointer = std::make_shared<toml::table>(
+		        std::move(defaultConfig())
+		    );
+		}
+		else
+		{
+		    tablePointer = std::make_shared<toml::table>(
+		        std::move(toml::parse(is))
+		    );
+		}
+	    }
+	);
+        return tablePointer;
     }
     catch (const toml::parse_error&)
     {

@@ -4,6 +4,9 @@
 #include <sdmmc_cmd.h>
 #include <driver/sdmmc_host.h>
 
+#include <ext/stdio_filebuf.h> 
+#include <fstream>
+
 
 /* Hardware Config given here */
 constexpr gpio_num_t SD_MMC_D0_PIN() { return GPIO_NUM_14; }
@@ -103,6 +106,45 @@ SDCard::SdCardDirectory SDCard::openDir(const String &pathName)
 
     return result;
 }
+
+
+template<>
+void SDCard::openFileStream<std::istream>(String const& filename, std::function<void(std::istream&)> op)
+{
+    SDCard::SdCardFile file = this->open(
+        filename,
+        SDCard::OpenMode::FILE_READONLY
+    );
+    if (!file)
+    {
+	std::istream is(nullptr);
+        op(is);
+	return;
+    }
+    __gnu_cxx::stdio_filebuf<char> filebuf(file.get(), std::ios::in);
+    std::istream is(&filebuf);
+    op(is);
+}
+
+
+template<>
+void SDCard::openFileStream<std::iostream>(String const& filename, std::function<void(std::iostream&)> op)
+{
+    SDCard::SdCardFile file = this->open(
+        filename,
+        SDCard::OpenMode::FILE_READWRITE
+    );
+    if (!file)
+    {
+	std::iostream ios(nullptr);
+        op(ios);
+	return;
+    }
+    __gnu_cxx::stdio_filebuf<char> filebuf(file.get(), std::ios::in | std::ios::out);
+    std::iostream ios(&filebuf);
+    op(ios);
+}
+
 
 std::shared_ptr<SDCard> SDCard::load()
 {

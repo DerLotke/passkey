@@ -28,6 +28,18 @@ class SDCard
         SdCardFile open(const String &filename, OpenMode const mode) const;
         SdCardDirectory openDir(const String &pathName);
 
+	/**
+	 * @brief Open a filestream and perform an operation with it
+	 *
+	 * The filestream is valid only during the duration of the call of op.
+	 *
+	 * @tparam FileStreamType Type of stream to open (either std::istream or std::iostream)
+	 * @param filename File to open
+	 * @param op Functionial containing operation that shall be performed using the filestream
+	 */
+	template<class FileStreamType>
+	void openFileStream(String const& filename, std::function<void(FileStreamType&)> op);
+
 	static std::shared_ptr<SDCard> load();
 	static void unload();
 
