@@ -15,11 +15,12 @@
 #include "keyboard.hpp"
 #include "themes.hpp"
 #include "macros.hpp"
+#include "config.hpp"
 
 static UI::Application *application;
 static UI::Menu * typekeyMenu;
 static Statusbar *statusBar;
-static SDCard *sdCard;
+static std::shared_ptr<SDCard> sdCard;
 static UI::AbstractMenuBar::MenuItems menuItems;
 static UsbKeyboard *keyboard;
 
@@ -31,8 +32,12 @@ static void loadDirectoryContent(void)
   dirent *dir;
   while((dir = readdir(directory.get())))
   {
-      if(DT_REG == dir->d_type) {
-        menuItems.emplace_back(String(dir->d_name));
+      if(DT_REG == dir->d_type)
+      {
+            if (dir->d_name != configFileName())
+	    {
+                menuItems.emplace_back(String(dir->d_name));
+	    }
       }
   }
 
@@ -98,7 +103,7 @@ void setup()
     esp_event_loop_create_default();
     esp_event_handler_register(KEYBOARD_EVENT, UsbKeyboard::LedsUpdated, onLedUpdate, NULL);
 
-    sdCard = new SDCard();
+    sdCard = SDCard::load();
     loadDirectoryContent();
     UI::Rect fullScreen = UI::Application::getFullFrameRect();
     application = new UI::Application();

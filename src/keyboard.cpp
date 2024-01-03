@@ -1,7 +1,9 @@
 #include "keyboard.hpp"
+#include "config.hpp"
 
 #include <USBHID.h>
 #include <Arduino.h>
+
 
 ESP_EVENT_DEFINE_BASE(KEYBOARD_EVENT);
 
@@ -35,12 +37,18 @@ UsbKeyboard::UsbKeyboard(bool const skipUsb):
     if(!skipUsb) {
         keyBoard_.begin();
 
+	std::shared_ptr<toml::table const> config = getConfig();
+
         USB.productName("PassKey");
         USB.manufacturerName("Falk Software");
         USB.serialNumber("1");
         USB.firmwareVersion(1);
-        USB.VID(0x413C); //Claim we are from DELL :P
-        USB.PID(0x2010); //A nice generic Keyboard
+
+	// In default case, claim we are from DELL :P
+        USB.VID((*config)["device"]["vendor_id"].value_or<uint16_t>(0x413c));
+
+	// In default case, this ID resembles a nice generic keyboard
+	USB.PID((*config)["device"]["product_id"].value_or<uint16_t>(0x2010));
 
         USB.begin();
     }
