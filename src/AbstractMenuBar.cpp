@@ -75,26 +75,20 @@ namespace UI
 
     void AbstractMenuBar::setHandleInput(bool useInput)
     {
-        if (currentMenubarHandlingInput_ != this)
+        if (currentMenubarHandlingInput_ != this && useInput)
         {
-            if (useInput)
-            {
-                esp_event_handler_register(KEYBOARD_EVENT,
-                                           ESP_EVENT_ANY_ID,
-                                           AbstractMenuBar::keyboardEventHandler,
-                                           this);
-                currentMenubarHandlingInput_ = this;
-            }
+            esp_event_handler_register(KEYBOARD_EVENT,
+                                       ESP_EVENT_ANY_ID,
+                                       AbstractMenuBar::keyboardEventHandler,
+                                       this);
+            currentMenubarHandlingInput_ = this;
         }
-        else 
+        else if (currentMenubarHandlingInput_ == this && !useInput)
         {
-            if (!useInput)
-            {
-                esp_event_handler_unregister(KEYBOARD_EVENT,
-                                             ESP_EVENT_ANY_ID,
-                                             AbstractMenuBar::keyboardEventHandler);
-                currentMenubarHandlingInput_ = nullptr;
-            }
+            esp_event_handler_unregister(KEYBOARD_EVENT,
+                                         ESP_EVENT_ANY_ID,
+                                         AbstractMenuBar::keyboardEventHandler);
+            currentMenubarHandlingInput_ = nullptr;
         }
     }
 
