@@ -61,7 +61,8 @@ UsbKeyboard::UsbKeyboard(bool const skipUsb):
 
 UsbKeyboard::~UsbKeyboard()
 {
-    /*@TODO find the unregister event handler function...*/
+    /* If you get here ... not good, as there is no way to unregister (usb event loop is private 
+       and allows only to register):( we will crash soon than ...*/
     keyBoard_.end();
 }
 
