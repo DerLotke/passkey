@@ -17,7 +17,9 @@ PassKeyApplication::PassKeyApplication(UI::Theme const& theme): UI::Application(
         loadDirectoryContent(), 
         getMenuArea(),
         theme, 
-        0)
+        0),
+        state_(ApplicationState::SelectPassword),
+        selectedItem_("")
 {
     typekeyMenu_.makeActive();
 }
@@ -29,6 +31,18 @@ PassKeyApplication::~PassKeyApplication()
 void PassKeyApplication::update()
 {
     UI::Application::update(); //Call the update from the base class
+
+    ApplicationState tmp = state_;
+
+    switch(state_)
+    {
+        case  ApplicationState::SelectPassword: handleSelectPassword(); break;
+        case  ApplicationState::ResetLedsBeforePassword: handleResetLedsBeforePassword(); break;
+        case  ApplicationState::TypePassword: handleTypePassword(); break;
+        case  ApplicationState::ResetLedsAfterPassword: handleResetLedsAfterPassword(); break;
+    }
+
+    previousState_ = state_;
 
     keyboard_.tick(); // Tick the Keyboard here
 }
@@ -70,10 +84,11 @@ UI::AbstractMenuBar::MenuItems PassKeyApplication::loadDirectoryContent()
 
 void PassKeyApplication::onMenuEvent(UI::AbstractMenuBar &menuBar, UI::AbstractMenuBar::EventData const &eventData)
 {
-    	std::shared_ptr<SDCard> sdCard = SDCard::load();
-        KeyStrokeFile file(sdCard->open(menuBar.selectedItem(), SDCard::OpenMode::FILE_READONLY));
-        keyboard_.restoreOriginalLedState();
-	    keyboard_.sendKeyStrokes(file);
+        if(state_ == ApplicationState::SelectPassword) 
+        {
+            selectedItem_ = menuBar.selectedItem();
+            state_ = ApplicationState::ResetLedsBeforePassword;
+        }
 }
 
 UI::Rect PassKeyApplication::getMenuArea() const
@@ -81,4 +96,47 @@ UI::Rect PassKeyApplication::getMenuArea() const
     UI::Rect screen = getFullFrameRect();
     
     return UI::Rect(0,1,screen.width, screen.height -1);
+}
+
+void PassKeyApplication::handleSelectPassword()
+{
+    /* Nothing to do for now */
+}
+
+void PassKeyApplication::handleResetLedsBeforePassword()
+{
+    if(previousState_ == state_)
+    {
+        if(keyboard_.ledsNeedReset())
+        {
+            keyboard_.restoreOriginalLedState();
+        }
+
+        state_ = ApplicationState::TypePassword;
+    }
+}
+
+void PassKeyApplication::handleTypePassword()
+{
+    if(previousState_ == state_)
+    {
+        std::shared_ptr<SDCard> sdCard = SDCard::load();
+        KeyStrokeFile file(sdCard->open(selectedItem_, SDCard::OpenMode::FILE_READONLY));
+	    keyboard_.sendKeyStrokes(file);
+
+        state_ = ApplicationState::ResetLedsAfterPassword;
+    }
+}
+
+void PassKeyApplication::handleResetLedsAfterPassword()
+{
+    if(previousState_ == state_)
+    {
+        if(keyboard_.ledsNeedReset())
+        {
+            keyboard_.restoreOriginalLedState();
+        }
+
+        state_ = ApplicationState::SelectPassword;
+    }
 }
