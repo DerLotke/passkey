@@ -29,6 +29,7 @@ class UsbKeyboard
         bool isCapsLockSet() const { return leds_.capslock != 0; }
         bool isNumLockSet() const { return leds_.numlock != 0; }
         bool isScrollLockSet() const { return leds_.scrolllock != 0; }
+        bool ledsNeedReset() const { return leds_.leds != initialState_.leds; }
 
         void sendKeyStrokes(KeyStrokeFile &input);
 
