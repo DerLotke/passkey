@@ -27,8 +27,10 @@ void UsbKeyboard::usbKeyboardEventHandler( void* event_handler_arg, esp_event_ba
 
 UsbKeyboard::UsbKeyboard(bool const skipUsb):
     button_(0, true ),
-    isFirstUpdate_(true)
+    isFirstUpdate_(true),
+    ledRestoreInProgress_(false)
 {
+    initialState_.leds = 0;
 
     arduino_usb_event_handler_register_with(ARDUINO_USB_HID_KEYBOARD_EVENTS,
                                             ARDUINO_USB_HID_KEYBOARD_LED_EVENT,
@@ -37,24 +39,30 @@ UsbKeyboard::UsbKeyboard(bool const skipUsb):
     if(!skipUsb) {
         keyBoard_.begin();
 
-	std::shared_ptr<toml::table const> config = getConfig();
+	    std::shared_ptr<toml::table const> config = getConfig();
 
         USB.productName("PassKey");
         USB.manufacturerName("Falk Software");
         USB.serialNumber("1");
         USB.firmwareVersion(1);
 
-	// In default case, claim we are from DELL :P
+	    // In default case, claim we are from DELL :P
         USB.VID((*config)["device"]["vendor_id"].value_or<uint16_t>(0x413c));
 
-	// In default case, this ID resembles a nice generic keyboard
-	USB.PID((*config)["device"]["product_id"].value_or<uint16_t>(0x2010));
+	    // In default case, this ID resembles a nice generic keyboard
+	    USB.PID((*config)["device"]["product_id"].value_or<uint16_t>(0x2010));
 
         USB.begin();
     }
 
     button_.attachClick([]{esp_event_post(KEYBOARD_EVENT, KeyDown, nullptr, 0, 0); });
     button_.attachLongPressStart([]{esp_event_post(KEYBOARD_EVENT, KeySelect, nullptr, 0, 0); });
+}
+
+UsbKeyboard::~UsbKeyboard()
+{
+    /*@TODO find the unregister event handler function...*/
+    keyBoard_.end();
 }
 
 void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const led)
@@ -68,6 +76,13 @@ void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const l
     tmp.self = this;
 
     esp_event_post(KEYBOARD_EVENT, LedsUpdated,&tmp, sizeof(EventData),0);
+
+    if(ledRestoreInProgress_)
+    {
+        //With every update check if we reached the final restore state
+        ledRestoreInProgress_ = (initialState_.leds != leds_.leds);
+        return; //Early return, we do need to skip any further processing until the LED states match again
+    }
 
     if(!isFirstUpdate_)
     {
@@ -85,6 +100,8 @@ void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const l
         {
             esp_event_post(KEYBOARD_EVENT, KeySelect,&tmp, sizeof(EventData),0);
         }
+    } else {
+        initialState_.leds = led.leds;
     }
 
     isFirstUpdate_ = false;
@@ -107,4 +124,31 @@ void UsbKeyboard::sendKeyStrokes(KeyStrokeFile &input)
             }
         }
     keyBoard_.releaseAll();
+}
+
+void UsbKeyboard::restoreOriginalLedState()
+{
+    arduino_usb_hid_keyboard_event_data_t changed;
+
+    changed.leds = initialState_.leds ^ leds_.leds; //Determine changed leds by using XOR
+
+    ledRestoreInProgress_ = true;
+
+    if (changed.capslock)
+    {
+        keyBoard_.pressRaw(0x39);
+        keyBoard_.releaseRaw(0x39);
+    }
+
+    if (changed.numlock)
+    {
+        keyBoard_.pressRaw( 0x53);
+        keyBoard_.releaseRaw( 0x53);
+    }
+
+    if (changed.scrolllock)
+    { 
+        keyBoard_.pressRaw(0x47);
+        keyBoard_.releaseRaw(0x47);  
+    }
 }

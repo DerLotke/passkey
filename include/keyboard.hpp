@@ -32,13 +32,17 @@ class UsbKeyboard
 
         void sendKeyStrokes(KeyStrokeFile &input);
 
+        void restoreOriginalLedState();
+
         void tick() { button_.tick(); }
 
     private:
         USBHIDKeyboard keyBoard_;
         arduino_usb_hid_keyboard_event_data_t leds_;
+        arduino_usb_hid_keyboard_event_data_t initialState_;
         OneButton button_;
         bool isFirstUpdate_;
+        bool ledRestoreInProgress_;
 
         void onLedStateChange(arduino_usb_hid_keyboard_event_data_t const);
 
