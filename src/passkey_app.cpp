@@ -19,6 +19,7 @@ PassKeyApplication::PassKeyApplication(UI::Theme const& theme): UI::Application(
         theme, 
         0),
         state_(ApplicationState::SelectPassword),
+        previousState_(ApplicationState::SelectPassword),
         selectedItem_("")
 {
     typekeyMenu_.makeActive();
@@ -100,20 +101,21 @@ UI::Rect PassKeyApplication::getMenuArea() const
 
 void PassKeyApplication::handleSelectPassword()
 {
-    /* Nothing to do for now */
+    typekeyMenu_.enable();
 }
 
 void PassKeyApplication::handleResetLedsBeforePassword()
 {
     if(previousState_ == state_)
     {
+        typekeyMenu_.disable();
         if(keyboard_.ledsNeedReset())
         {
             keyboard_.restoreOriginalLedState();
         }
 
         state_ = ApplicationState::TypePassword;
-    }
+    } 
 }
 
 void PassKeyApplication::handleTypePassword()
