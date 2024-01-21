@@ -52,7 +52,7 @@ void Menu::makeActive()
 {
     for (Menu* menu : menus_)
     {
-	menu->menuBar_->setHidden(true);
+	    menu->menuBar_->setHidden(true);
         menu->menuBar_->setHandleInput(false);
     }
     menuBar_->setHidden(false);
