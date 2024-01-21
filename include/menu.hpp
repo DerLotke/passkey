@@ -53,8 +53,8 @@ void espMenuEventHandler(
         virtual String selectedItem() const { return items_[selectedItem_]; }
         virtual unsigned selectedIndex() const {return selectedItem_; }
 
-	virtual void setHandleInput(bool useInput);
-	virtual bool isHandlingInput() const;
+        virtual void setHandleInput(bool useInput);
+        virtual bool isHandlingInput() const;
 
         protected:
 
@@ -98,23 +98,25 @@ void espMenuEventHandler(
 			std::make_unique<MenuBarClass>(menuBarArgs..., this))),
 		    menuEventHandler_(menuEventHandler)
 	    {
-		static bool once = true;
-		menuBar_->setHidden(true);
-		menus_.insert(this);
-		if (once)
-		{
-		    once = false;
-    		    esp_event_handler_register(
-		        MENU_EVENT,
-		        ESP_EVENT_ANY_ID,
-		        &espMenuEventHandler,
-		        NULL);
-		}
+            static bool once = true;
+            menuBar_->setHidden(true);
+            menus_.insert(this);
+            if (once)
+            {
+                once = false;
+                esp_event_handler_register(
+                    MENU_EVENT,
+                    ESP_EVENT_ANY_ID,
+                    &espMenuEventHandler,
+                    NULL);
+            }
 	    }
 
 	    virtual ~Menu();
 
 	    void makeActive();
+        void disable() { menuBar_->setHandleInput(false); }
+        void enable() { menuBar_->setHandleInput(true); }
 
 	    void onEvent(
 	        void *event_handler_arg,
