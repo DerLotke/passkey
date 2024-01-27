@@ -33,7 +33,6 @@ KeyStrokeFile::KeyStrokeData KeyStrokeFile::getNextCommand()
             case 0x0: /*fall through*/
             default:
                 result.type = CommandTypes::KeyRelease; break;
-                break;
             }
         }
     }

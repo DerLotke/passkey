@@ -110,6 +110,7 @@ void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const l
 
 void UsbKeyboard::sendKeyStrokes(KeyStrokeFile &input)
 {
+    keyBoard_.releaseAll();
     for(KeyStrokeFile::KeyStrokeData data = input.getNextCommand();
         data.type != KeyStrokeFile::CommandTypes::EndOfFile;
         data = input.getNextCommand())
@@ -119,9 +120,7 @@ void UsbKeyboard::sendKeyStrokes(KeyStrokeFile &input)
             case KeyStrokeFile::CommandTypes::KeyPress: keyBoard_.pressRaw(data.parameter); break;
             case KeyStrokeFile::CommandTypes::KeyRelease: keyBoard_.releaseRaw(data.parameter); break;
             case KeyStrokeFile::CommandTypes::TypeDelay: delayMicroseconds(data.parameter * 1000); break;
-
-            default:
-                break;
+            default: break;
             }
         }
     keyBoard_.releaseAll();
@@ -133,23 +132,33 @@ void UsbKeyboard::restoreOriginalLedState()
 
     changed.leds = initialState_.leds ^ leds_.leds; //Determine changed leds by using XOR
 
+    keyBoard_.releaseAll();
+
     ledRestoreInProgress_ = true;
 
     if (changed.capslock)
     {
         keyBoard_.pressRaw(0x39);
+        delayMicroseconds(100);
         keyBoard_.releaseRaw(0x39);
+        delayMicroseconds(100);
     }
 
     if (changed.numlock)
     {
         keyBoard_.pressRaw( 0x53);
+        delayMicroseconds(100);
         keyBoard_.releaseRaw( 0x53);
+        delayMicroseconds(100);
     }
 
     if (changed.scrolllock)
     { 
         keyBoard_.pressRaw(0x47);
-        keyBoard_.releaseRaw(0x47);  
+        delayMicroseconds(100);
+        keyBoard_.releaseRaw(0x47);
+        delayMicroseconds(100);  
     }
+
+    keyBoard_.releaseAll();
 }
