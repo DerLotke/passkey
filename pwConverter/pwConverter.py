@@ -207,6 +207,7 @@ german_keymap = {
     "?" : ["LEFTSHIFT", "MINUS"],
     "\\": ["RIGHTALT", "MINUS"],
     "\t": ["TAB"],
+    "\n": ["ENTER"],
     "q" : ["Q"],
     "Q" : ["LEFTSHIFT", "Q"],
     "@" : ["RIGHTALT", "Q"],
