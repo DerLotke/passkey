@@ -1,6 +1,9 @@
 import sys
 import struct
 
+import argparse
+
+
 key_hex_codes = {
     "NONE":     0x00,
     "ERR_OVF":  0x01,
@@ -292,12 +295,8 @@ def getKeySequence(inputKey):
     return keys
 
 def main(arguments):
-    if len(arguments) != 3:
-        print("Usage: pwConverter.py [input] [output]")
-        return -1
-
-    with open(arguments[1],"r") as input:
-        with open(arguments[2],"wb") as output:
+    with open(arguments.input,"r") as input:
+        with open(arguments.output,"wb") as output:
             for line in input:
                 for char in line:
                     keyCodes = getKeySequence(char)
@@ -313,4 +312,10 @@ def main(arguments):
                     output.write(struct.pack("@BB", 0x40, 0))
 
 if __name__=="__main__":
-    exit(main(sys.argv))
+    parser = argparse.ArgumentParser(
+        prog="PasswordConverter",
+        description="Converts a character sequence to a keyfile"
+    )
+    parser.add_argument("input")
+    parser.add_argument("output")
+    exit(main(parser.parse_args()))
