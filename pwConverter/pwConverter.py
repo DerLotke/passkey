@@ -292,7 +292,7 @@ def getKeySequence(inputKey):
 
 def main(arguments):
     if len(arguments) != 3:
-        print("Ussage: pwConverter.py [input] [output]")
+        print("Usage: pwConverter.py [input] [output]")
         return -1
 
     with open(arguments[1],"r") as input:
