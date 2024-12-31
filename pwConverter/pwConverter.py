@@ -315,9 +315,6 @@ def main(arguments):
                 return -1
 
     try: # This makes sure we delete the temporary file in case anything goes wrong
-        if arguments.output is None:
-            arguments.output = "out.key"
-
         with open(arguments.input,"r") as input:
             with open(arguments.output,"wb") as output:
                 for line in input:
@@ -350,6 +347,8 @@ if __name__=="__main__":
         prog="PasswordConverter",
         description="Converts a character sequence to a keyfile"
     )
-    parser.add_argument("--input", "-i")
-    parser.add_argument("--output", "-o")
+    parser.add_argument("--input", "-i", metavar="FILE",
+                        help="file to be converted to keystroke (if left blank, you will be prompted for a key sequence)")
+    parser.add_argument("--output", "-o", metavar="FILE", default="out.key",
+                        help="keyfile to be generated (default: %(default)s)")
     exit(main(parser.parse_args()))
