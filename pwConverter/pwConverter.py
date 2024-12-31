@@ -2,6 +2,9 @@
 
 import sys
 import struct
+import os
+from tempfile import mkstemp
+from getpass import getpass
 
 import argparse
 
@@ -297,27 +300,56 @@ def getKeySequence(inputKey):
     return keys
 
 def main(arguments):
-    with open(arguments.input,"r") as input:
-        with open(arguments.output,"wb") as output:
-            for line in input:
-                for char in line:
-                    keyCodes = getKeySequence(char)
-                    # Press the keys
-                    for i in keyCodes:
-                        output.write(struct.pack("@BB",0x80,i))
+    needDeleteTmp = False
+    if arguments.input is None:
+        needDeleteTmp = True
+        _, arguments.input = mkstemp()
+        with open(arguments.input, "w") as input:
+            input.write(
+                getpass("Enter key sequence: "))
+        compare_sequence = getpass("Enter sequence again to confirm: ")
+        with open(arguments.input, "r") as input:
+            if compare_sequence != input.read():
+                print("Error: sequences do not match", file=sys.stderr)
+                os.remove(arguments.input)
+                return -1
 
-                    output.write(struct.pack("@BB", 0x40, 0))
-                    # Release the keys
-                    for i in keyCodes:
-                        output.write(struct.pack("@BB",0x00,i))
+    try: # This makes sure we delete the temporary file in case anything goes wrong
+        if arguments.output is None:
+            arguments.output = "out.key"
 
-                    output.write(struct.pack("@BB", 0x40, 0))
+        with open(arguments.input,"r") as input:
+            with open(arguments.output,"wb") as output:
+                for line in input:
+                    for char in line:
+                        keyCodes = getKeySequence(char)
+                        # Press the keys
+                        for i in keyCodes:
+                            output.write(struct.pack("@BB",0x80,i))
+
+                        output.write(struct.pack("@BB", 0x40, 0))
+                        # Release the keys
+                        for i in keyCodes:
+                            output.write(struct.pack("@BB",0x00,i))
+
+                        output.write(struct.pack("@BB", 0x40, 0))
+
+        if needDeleteTmp:
+            os.remove(arguments.input)
+
+    except BaseException as e:
+        if needDeleteTmp:
+            os.remove(arguments.input)
+        raise(e)
+
+    return 0
+
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(
         prog="PasswordConverter",
         description="Converts a character sequence to a keyfile"
     )
-    parser.add_argument("input")
-    parser.add_argument("output")
+    parser.add_argument("--input", "-i")
+    parser.add_argument("--output", "-o")
     exit(main(parser.parse_args()))
