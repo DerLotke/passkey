@@ -20,10 +20,11 @@ using PassKeyAppItem = AppItem<PassKeyApplication, UI::Theme const&>;
 static PassKeyAppItem * passkeyApp;
 
 
-static void onLedUpdate(void *event_handler_arg,
-                           esp_event_base_t event_base,
-                           int32_t event_id,
-                           void *event_data)
+static void propagateKeyboardEvent(
+    void *event_handler_arg,
+    esp_event_base_t event_base,
+    int32_t event_id,
+    void *event_data)
 {
   if (event_base == KEYBOARD_EVENT) {
       UsbKeyboard::EventData *event = reinterpret_cast<UsbKeyboard::EventData *>(event_data);
@@ -41,7 +42,11 @@ static constexpr std::string_view themeDefault_ = "robotron";
 void setup()
 {
     esp_event_loop_create_default();
-    esp_event_handler_register(KEYBOARD_EVENT, UsbKeyboard::LedsUpdated, onLedUpdate, NULL);
+    esp_event_handler_register(
+        KEYBOARD_EVENT,
+        UsbKeyboard::LedsUpdated,
+        propagateKeyboardEvent,
+        NULL);
 
     try
     {
