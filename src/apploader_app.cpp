@@ -52,6 +52,15 @@ void AppLoaderApplication::rotate()
 }
 
 
+void AppLoaderApplication::onKeyboardEvent(int32_t eventId, UsbKeyboard::EventData const * event)
+{
+    if (currentApp_)
+    {
+        currentApp_->onKeyboardEvent(eventId, event);
+    }
+}
+
+
 void AppLoaderApplication::onNotify(Widget* requestOrigin, UI::NotificationCode code)
 {
     switch (code)

@@ -65,6 +65,8 @@ class AppLoaderApplication: public UI::Application
         void unload();
         void rotate();
 
+        virtual void onKeyboardEvent(int32_t eventId, UsbKeyboard::EventData const * event);
+
     protected:
         virtual void onNotify(Widget* requestOrigin, UI::NotificationCode code) override;
 
