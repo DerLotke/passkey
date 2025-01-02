@@ -8,6 +8,12 @@
 
 
 namespace UI {
+    // NotificationCodes for interaction between widgets
+    enum class NotificationCode {
+        DESTROY_ME, // Request deconstrution at parent level
+        SUSPEND_ME // Request suspension at parent level
+    };
+
     class Widget
     {
         public:
@@ -21,21 +27,27 @@ namespace UI {
 
         virtual void setTheme(Theme const& theme) { faceColor_ = theme.colors.background; }
 
-	void setHidden(bool hidden) { hidden_ = hidden; }
-	bool isHidden() { return hidden_; }
+        void setHidden(bool hidden) { hidden_ = hidden; }
+        bool isHidden() { return hidden_; }
 
         void moveTo(int x, int y) { area_.x = x; area_.y = y; }
 
-	Widget const * getSibling() const {return nextSibling_;}
+        Widget const * getSibling() const {return nextSibling_;}
+
+        void notifyParent(NotificationCode code)
+        {
+            if (parent_ != nullptr) parent_->onNotify(this, code);
+        }
 
         protected:
         virtual void draw(TFT_eSprite &drawBuffer, const Rect &clientArea) const;
+        virtual void onNotify(Widget* requestOrigin, NotificationCode code);
 
         Rect area_;
         Widget * parent_;
         Widget * child_;
         Widget * nextSibling_;
         Color faceColor_;
-	bool hidden_;
+        bool hidden_;
     };
 }
