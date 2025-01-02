@@ -71,6 +71,5 @@ class AppLoaderApplication: public UI::Application
         AbstractAppItem* suspendedApp_;
 
         bool doUnload_;
-        bool doSuspend_;
 };
 
