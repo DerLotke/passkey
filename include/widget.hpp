@@ -11,8 +11,7 @@
 namespace UI {
     // NotificationCodes for interaction between widgets
     enum class NotificationCode {
-        DESTROY_ME, // Request deconstrution at parent level
-        SUSPEND_ME // Request suspension at parent level
+        DESTROY_ME // Request deconstrution at parent level
     };
 
     class Widget
