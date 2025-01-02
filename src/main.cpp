@@ -25,9 +25,9 @@ static void onLedUpdate(void *event_handler_arg,
                            int32_t event_id,
                            void *event_data)
 {
-  if(event_base == KEYBOARD_EVENT && event_id == UsbKeyboard::LedsUpdated) {
+  if (event_base == KEYBOARD_EVENT) {
       UsbKeyboard::EventData *event = reinterpret_cast<UsbKeyboard::EventData *>(event_data);
-      // application->updateStatusBar(event); // TODO Readd
+      application->onKeyboardEvent(event_id, event);
   }
 }
 

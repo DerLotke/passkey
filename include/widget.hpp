@@ -2,6 +2,7 @@
 
 #include <TFT_eSPI.h>
 
+#include <keyboard.hpp>
 #include <rect.hpp>
 #include <colors.hpp>
 #include <themes.hpp>
@@ -38,6 +39,8 @@ namespace UI {
         {
             if (parent_ != nullptr) parent_->onNotify(this, code);
         }
+
+        virtual void onKeyboardEvent(int32_t eventId, UsbKeyboard::EventData const * event);
 
         protected:
         virtual void draw(TFT_eSprite &drawBuffer, const Rect &clientArea) const;

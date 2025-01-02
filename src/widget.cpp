@@ -73,4 +73,9 @@ namespace UI
     {
         // Default action is to do nothing
     }
+
+    void Widget::onKeyboardEvent(int32_t, UsbKeyboard::EventData const *)
+    {
+        // Default action is to do nothing
+    }
 }

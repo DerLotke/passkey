@@ -14,7 +14,7 @@ class PassKeyApplication: public UI::Application
 
         void update() override;
 
-        void updateStatusBar(UsbKeyboard::EventData const * const);
+        virtual void onKeyboardEvent(int32_t eventId, UsbKeyboard::EventData const * event) override;
 
     private:
         enum class ApplicationState

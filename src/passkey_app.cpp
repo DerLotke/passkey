@@ -48,9 +48,9 @@ void PassKeyApplication::update()
     keyboard_.tick(); // Tick the Keyboard here
 }
 
-void PassKeyApplication::updateStatusBar(UsbKeyboard::EventData const * const event)
+void PassKeyApplication::onKeyboardEvent(int32_t eventId, UsbKeyboard::EventData const * const event)
 {
-    if(event)
+    if (eventId == UsbKeyboard::LedsUpdated && event)
     {
         statusBar_.setCapsLockStatus(event->self->isCapsLockSet());
         statusBar_.setNumLockStatus(event->self->isNumLockSet());
