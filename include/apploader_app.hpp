@@ -58,6 +58,7 @@ class AppLoaderApplication: public UI::Application
 
         void load(unsigned index = 0);
         void unload();
+        void rotate();
 
     protected:
         virtual void onNotify(Widget* requestOrigin, UI::NotificationCode code) override;

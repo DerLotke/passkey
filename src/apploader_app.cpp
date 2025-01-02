@@ -2,11 +2,11 @@
 #include "config.hpp"
 
 #include <functional>
+#include <algorithm>
 
 AppLoaderApplication::AppLoaderApplication(std::initializer_list<AbstractAppItem*> appItems): UI::Application(),
     suspendedApp_(nullptr),
-    doUnload_(false),
-    doSuspend_(false)
+    doUnload_(false)
 {
 }
 
@@ -18,7 +18,8 @@ void AppLoaderApplication::update()
 {
     if (doUnload_)
     {
-        unload();
+        rotate();
+        load(); // Loads front and unloads anything else that potentially existed already
         doUnload_ = false;
     }
 
@@ -45,15 +46,18 @@ void AppLoaderApplication::unload()
 }
 
 
+void AppLoaderApplication::rotate()
+{
+    std::rotate(apps_.begin(), apps_.begin() + 1, apps_.end());
+}
+
+
 void AppLoaderApplication::onNotify(Widget* requestOrigin, UI::NotificationCode code)
 {
     switch (code)
     {
         case UI::NotificationCode::DESTROY_ME:
             doUnload_ = true;
-            break;
-        case UI::NotificationCode::SUSPEND_ME:
-            doSuspend_ = true;
             break;
     }
 }
