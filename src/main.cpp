@@ -13,11 +13,11 @@
 #include "macros.hpp"
 #include "config.hpp"
 
-static AppLoaderApplication *application;
+static AppLoaderApplication* application;
 
 // Available Apps
 using PassKeyAppItem = AppItem<PassKeyApplication, UI::Theme const&>;
-static PassKeyAppItem * passkeyApp;
+static PassKeyAppItem* passkeyApp;
 
 
 static void propagateKeyboardEvent(
@@ -26,7 +26,8 @@ static void propagateKeyboardEvent(
     int32_t event_id,
     void *event_data)
 {
-  if (event_base == KEYBOARD_EVENT) {
+  if (event_base == KEYBOARD_EVENT)
+  {
       UsbKeyboard::EventData *event = reinterpret_cast<UsbKeyboard::EventData *>(event_data);
       application->onKeyboardEvent(event_id, event);
   }
@@ -52,14 +53,14 @@ void setup()
     {
         if constexpr (themeSet_ == "random")
         {
-          auto it = UI::themes().begin();
-          std::advance(it, random(UI::themes().size()));
-          passkeyApp = new PassKeyAppItem("Passkey", it->second);
+            auto it = UI::themes().begin();
+            std::advance(it, random(UI::themes().size()));
+            passkeyApp = new PassKeyAppItem("Passkey", it->second);
         }
         else
         {
-          UI::Theme const& theme = UI::themes().at(String(themeSet_.data()));
-          passkeyApp = new PassKeyAppItem("Passkey", theme);
+            UI::Theme const& theme = UI::themes().at(String(themeSet_.data()));
+            passkeyApp = new PassKeyAppItem("Passkey", theme);
         }
     }
     catch (std::out_of_range)
@@ -69,14 +70,13 @@ void setup()
     }
 
     application = new AppLoaderApplication{
-         passkeyApp
+        passkeyApp
     };
     application->load();
 }
 
-void loop() {
-
-  application->update();
-
-  delay(5);
+void loop()
+{
+    application->update();
+    delay(5);
 }
