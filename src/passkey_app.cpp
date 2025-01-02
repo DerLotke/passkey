@@ -4,12 +4,12 @@
 
 #include <functional>
 
-PassKeyApplication::PassKeyApplication(UI::Theme const& theme): UI::Application(),
+PassKeyApplication::PassKeyApplication(UI::Theme const& theme, Application * parent): UI::Application(parent),
     keyboard_(false),
     statusBar_(0, theme, this),
     typekeyMenu_(
         [this]( UI::AbstractMenuBar& menuBar, UI::AbstractMenuBar::EventData const& eventData)
-	    {
+        {
             onMenuEvent(menuBar, eventData);
         }, 
         this, 
@@ -70,9 +70,9 @@ UI::AbstractMenuBar::MenuItems PassKeyApplication::loadDirectoryContent()
       if(DT_REG == dir->d_type)
       {
             if (dir->d_name != configFileName())
-	    {
+        {
                 result.emplace_back(String(dir->d_name));
-	    }
+        }
       }
   }
 
@@ -124,7 +124,7 @@ void PassKeyApplication::handleTypePassword()
     {
         std::shared_ptr<SDCard> sdCard = SDCard::load();
         KeyStrokeFile file(sdCard->open(selectedItem_, SDCard::OpenMode::FILE_READONLY));
-	    keyboard_.sendKeyStrokes(file);
+        keyboard_.sendKeyStrokes(file);
 
         state_ = ApplicationState::ResetLedsAfterPassword;
     }

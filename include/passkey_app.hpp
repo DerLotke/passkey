@@ -9,7 +9,7 @@
 class PassKeyApplication: public UI::Application
 {
     public:
-        PassKeyApplication(UI::Theme const& theme);
+        PassKeyApplication(UI::Theme const& theme, UI::Application * parent = nullptr);
         virtual ~PassKeyApplication();
 
         void update() override;

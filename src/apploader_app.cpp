@@ -36,7 +36,7 @@ void AppLoaderApplication::update()
 
 void AppLoaderApplication::load(unsigned index)
 {
-    currentApp_ = apps_.at(index)->create();
+    currentApp_ = apps_.at(index)->create(this);
 }
 
 

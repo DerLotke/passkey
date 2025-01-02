@@ -23,7 +23,7 @@ class AbstractAppItem
             return name_;
         }
 
-        virtual std::shared_ptr<UI::Application> create() = 0;
+        virtual std::shared_ptr<UI::Application> create(UI::Application * parent) = 0;
 };
 
 
@@ -41,9 +41,14 @@ class AppItem : public AbstractAppItem
                 args_(std::forward<Ts>(applicationArgs)...)
         {}
 
-       virtual std::shared_ptr<UI::Application> create() override
+       virtual std::shared_ptr<UI::Application> create(UI::Application * parent = nullptr) override
        {
-           return std::apply(std::make_shared<ApplicationClass, std::add_lvalue_reference_t<Ts>...>, args_);
+            auto argsAndParent = std::tuple_cat(args_, std::make_tuple(parent));
+            return std::apply(
+                std::make_shared<
+                    ApplicationClass,
+                    std::add_lvalue_reference_t<Ts>..., UI::Application*&
+                >, argsAndParent);
        }
 };
 
