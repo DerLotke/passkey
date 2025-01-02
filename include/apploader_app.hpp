@@ -71,9 +71,7 @@ class AppLoaderApplication: public UI::Application
 
     private:
         std::vector<AbstractAppItem*> apps_; // Front is active app
-
         std::shared_ptr<UI::Application> currentApp_;
-        AbstractAppItem* suspendedApp_;
 
         bool doUnload_;
 };

@@ -4,8 +4,8 @@
 #include <functional>
 #include <algorithm>
 
-AppLoaderApplication::AppLoaderApplication(std::initializer_list<AbstractAppItem*> appItems): UI::Application(),
-    suspendedApp_(nullptr),
+AppLoaderApplication::AppLoaderApplication(std::initializer_list<AbstractAppItem*> appItems) :
+    UI::Application(),
     doUnload_(false)
 {
 }
