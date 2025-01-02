@@ -1,5 +1,13 @@
+#!/usr/bin/python
+
 import sys
 import struct
+import os
+from tempfile import mkstemp
+from getpass import getpass
+
+import argparse
+
 
 key_hex_codes = {
     "NONE":     0x00,
@@ -29,7 +37,7 @@ key_hex_codes = {
     "W":    0x1a,
     "X":    0x1b,
     "Y":    0x1c,
-    "Z":    0x1d, 
+    "Z":    0x1d,
     "1":    0x1e,
     "2":    0x1f,
     "3":    0x20,
@@ -39,7 +47,7 @@ key_hex_codes = {
     "7":    0x24,
     "8":    0x25,
     "9":    0x26,
-    "0":    0x27, 
+    "0":    0x27,
     "ENTER":    0x28,
     "ESC":  0x29,
     "BACKSPACE":    0x2a,
@@ -207,6 +215,7 @@ german_keymap = {
     "?" : ["LEFTSHIFT", "MINUS"],
     "\\": ["RIGHTALT", "MINUS"],
     "\t": ["TAB"],
+    "\n": ["ENTER"],
     "q" : ["Q"],
     "Q" : ["LEFTSHIFT", "Q"],
     "@" : ["RIGHTALT", "Q"],
@@ -291,25 +300,55 @@ def getKeySequence(inputKey):
     return keys
 
 def main(arguments):
-    if len(arguments) != 3:
-        print("Ussage: pwConverter.py [input] [output]")
-        return -1
+    needDeleteTmp = False
+    if arguments.input is None:
+        needDeleteTmp = True
+        _, arguments.input = mkstemp()
+        with open(arguments.input, "w") as input:
+            input.write(
+                getpass("Enter key sequence: "))
+        compare_sequence = getpass("Enter sequence again to confirm: ")
+        with open(arguments.input, "r") as input:
+            if compare_sequence != input.read():
+                print("Error: sequences do not match", file=sys.stderr)
+                os.remove(arguments.input)
+                return -1
 
-    with open(arguments[1],"r") as input:
-        with open(arguments[2],"wb") as output:
-            for line in input:
-                for char in line:
-                    keyCodes = getKeySequence(char)
-                    # Press the keys
-                    for i in keyCodes:
-                        output.write(struct.pack("@BB",0x80,i))
+    try: # This makes sure we delete the temporary file in case anything goes wrong
+        with open(arguments.input,"r") as input:
+            with open(arguments.output,"wb") as output:
+                for line in input:
+                    for char in line:
+                        keyCodes = getKeySequence(char)
+                        # Press the keys
+                        for i in keyCodes:
+                            output.write(struct.pack("@BB",0x80,i))
 
-                    output.write(struct.pack("@BB", 0x40, 0))
-                    # Release the keys
-                    for i in keyCodes:
-                        output.write(struct.pack("@BB",0x00,i))
+                        output.write(struct.pack("@BB", 0x40, 0))
+                        # Release the keys
+                        for i in keyCodes:
+                            output.write(struct.pack("@BB",0x00,i))
 
-                    output.write(struct.pack("@BB", 0x40, 0))
+                        output.write(struct.pack("@BB", 0x40, 0))
+
+        if needDeleteTmp:
+            os.remove(arguments.input)
+
+    except BaseException as e:
+        if needDeleteTmp:
+            os.remove(arguments.input)
+        raise(e)
+
+    return 0
+
 
 if __name__=="__main__":
-    exit(main(sys.argv))
+    parser = argparse.ArgumentParser(
+        prog="PasswordConverter",
+        description="Converts a character sequence to a keyfile"
+    )
+    parser.add_argument("--input", "-i", metavar="FILE",
+                        help="file to be converted to keystroke (if left blank, you will be prompted for a key sequence)")
+    parser.add_argument("--output", "-o", metavar="FILE", default="out.key",
+                        help="keyfile to be generated (default: %(default)s)")
+    exit(main(parser.parse_args()))
