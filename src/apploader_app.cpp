@@ -8,6 +8,11 @@ AppLoaderApplication::AppLoaderApplication(std::initializer_list<AbstractAppItem
     UI::Application(),
     doUnload_(false)
 {
+    for (AbstractAppItem* appItem : appItems)
+    {
+        apps_.push_back(appItem);
+    }
+    load();
 }
 
 AppLoaderApplication::~AppLoaderApplication()

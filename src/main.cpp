@@ -72,7 +72,6 @@ void setup()
     application = new AppLoaderApplication{
         passkeyApp
     };
-    application->load();
 }
 
 void loop()
