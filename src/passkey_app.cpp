@@ -4,6 +4,9 @@
 
 #include <functional>
 
+static constexpr unsigned TICKS_UNTIL_LOCK = 1000;
+
+
 PassKeyApplication::PassKeyApplication(UI::Theme const& theme, Application * parent): UI::Application(parent),
     statusBar_(0, theme, this),
     typekeyMenu_(
@@ -19,7 +22,8 @@ PassKeyApplication::PassKeyApplication(UI::Theme const& theme, Application * par
         0),
         state_(ApplicationState::SelectPassword),
         previousState_(ApplicationState::SelectPassword),
-        selectedItem_("")
+        selectedItem_(""),
+        ticksUntilLock_(TICKS_UNTIL_LOCK)
 {
     typekeyMenu_.makeActive();
 }
@@ -42,6 +46,12 @@ void PassKeyApplication::update()
         case  ApplicationState::ResetLedsAfterPassword: handleResetLedsAfterPassword(); break;
     }
 
+    --ticksUntilLock_;
+    if (ticksUntilLock_ == 0)
+    {
+        notifyParent(UI::NotificationCode::DESTROY_ME);
+    }
+
     previousState_ = state_;
 }
 
@@ -52,6 +62,7 @@ void PassKeyApplication::onKeyboardEvent(int32_t eventId, UsbKeyboard::EventData
         statusBar_.setCapsLockStatus(event->self->isCapsLockSet());
         statusBar_.setNumLockStatus(event->self->isNumLockSet());
         statusBar_.setScrollLockStatus(event->self->isScrollLockSet());
+        ticksUntilLock_ = TICKS_UNTIL_LOCK;
     }
 }
 

@@ -30,6 +30,8 @@ class PassKeyApplication: public UI::Application
         ApplicationState previousState_;
         String selectedItem_;
 
+        unsigned ticksUntilLock_;
+
         UI::AbstractMenuBar::MenuItems loadDirectoryContent();
         void onMenuEvent(UI::AbstractMenuBar& menuBar, UI::AbstractMenuBar::EventData const& eventData);
         UI::Rect getMenuArea() const;
