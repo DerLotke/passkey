@@ -6,8 +6,9 @@
 #include <list>
 #include <string_view>
 
-#include "passkey_app.hpp"
 #include "apploader_app.hpp"
+#include "passkey_app.hpp"
+#include "lockscreen_app.hpp"
 
 #include "themes.hpp"
 #include "macros.hpp"
@@ -18,6 +19,9 @@ static AppLoaderApplication* application;
 // Available Apps
 using PassKeyAppItem = AppItem<PassKeyApplication, UI::Theme const&>;
 static PassKeyAppItem* passkeyApp;
+
+using LockscreenAppItem = AppItem<LockscreenApplication>;
+static LockscreenAppItem* lockscreenApp;
 
 
 static void propagateKeyboardEvent(
@@ -69,8 +73,11 @@ void setup()
         passkeyApp = new PassKeyAppItem("Passkey", theme);
     }
 
+    lockscreenApp = new LockscreenAppItem("Lockscreen");
+
     application = new AppLoaderApplication{
-        passkeyApp
+        passkeyApp,
+        lockscreenApp
     };
 }
 
