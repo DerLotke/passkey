@@ -1604,19 +1604,66 @@ const unsigned char lockscreenImageData_[25600] = { /* 0X10,0X10,0X00,0XA0,0X00,
 };
 
 
+static unsigned TICKS_FOR_SIMULTANEOUS_PRESS = 200;
+
+
 LockscreenApplication::LockscreenApplication(Application * parent) :
     UI::Application(parent),
-    imageWidget_(0, 0, TFT_HEIGHT, TFT_WIDTH, (uint16_t*)lockscreenImageData_, this)
+    imageWidget_(0, 0, TFT_HEIGHT, TFT_WIDTH, (uint16_t*)lockscreenImageData_, this),
+    capsLockSet_(false),
+    numLockSet_(false),
+    scrollLockSet_(false),
+    ticksForSimultaneousPress_(TICKS_FOR_SIMULTANEOUS_PRESS)
 {}
+
 
 LockscreenApplication::~LockscreenApplication()
 {}
+
+
+void PassKeyApplication::update()
+{
+    UI::Application::update(); // Call the update from the base class
+    if (capsLockSet_ || numLockSet_ || scrollLockSet_)
+    {
+        --ticksForSimultaneousPress_;
+    }
+
+    if (ticksForSimultaneousPress_ == 0)
+    {
+        ticksForSimultaneousPress_ = TICKS_FOR_SIMULTANEOUS_PRESS;
+        capsLockSet_ = false;
+        numLockSet_ = false;
+        scrollLockSet_ = false;
+    }
+}
 
 
 void LockscreenApplication::onKeyboardEvent(int32_t eventId, UsbKeyboard::EventData const * event)
 {
     if (eventId == UsbKeyboard::LedsUpdated && event)
     {
-        notifyParent(UI::NotificationCode::DESTROY_ME);
+        if (event->self->isCapsLockSet())
+        {
+            capsLockSet_ = true;
+        }
+        if (event->self->isNumLockSet())
+        {
+            numLockSet_ = true;
+        }
+        if (event->self->isScrollLockSet())
+        {
+            scrollLockSet_ = true;
+        }
+
+        unsigned unlocksCounter = 0;
+        if (capsLockSet_) ++unlocksCounter;
+        if (numLockSet_) ++unlocksCounter;
+        if (scrollLockSet_) ++unlocksCounter;
+
+        if (unlocksCounter >= 2)
+        {
+            notifyParent(UI::NotificationCode::DESTROY_ME);
+        }
     }
 }
