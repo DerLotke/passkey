@@ -46,7 +46,7 @@ def main(arguments):
 
     print(f"uint8_t const {Path(arguments.input).stem}[25600] = {{")
     print(with_newlines)
-    print("}")
+    print("};")
 
     print(len(rgb_bytes), file=sys.stderr)
     return 0
