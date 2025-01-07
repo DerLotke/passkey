@@ -1604,7 +1604,7 @@ const unsigned char lockscreenImageData_[25600] = { /* 0X10,0X10,0X00,0XA0,0X00,
 };
 
 
-static unsigned TICKS_FOR_SIMULTANEOUS_PRESS = 200;
+static unsigned TICKS_FOR_SIMULTANEOUS_PRESS = 50;
 
 
 LockscreenApplication::LockscreenApplication(Application * parent) :
@@ -1621,7 +1621,7 @@ LockscreenApplication::~LockscreenApplication()
 {}
 
 
-void PassKeyApplication::update()
+void LockscreenApplication::update()
 {
     UI::Application::update(); // Call the update from the base class
     if (capsLockSet_ || numLockSet_ || scrollLockSet_)
