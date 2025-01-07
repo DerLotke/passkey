@@ -1,7 +1,6 @@
 #pragma once
 
 #include "application.hpp"
-#include "keyboard.hpp"
 #include "statusbar.hpp"
 #include "menu.hpp"
 #include "themes.hpp"
@@ -25,7 +24,6 @@ class PassKeyApplication: public UI::Application
             ResetLedsAfterPassword
         };
 
-        UsbKeyboard keyboard_;
         Statusbar statusBar_;
         UI::Menu typekeyMenu_;
         ApplicationState state_;

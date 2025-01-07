@@ -5,7 +5,6 @@
 #include <functional>
 
 PassKeyApplication::PassKeyApplication(UI::Theme const& theme, Application * parent): UI::Application(parent),
-    keyboard_(false),
     statusBar_(0, theme, this),
     typekeyMenu_(
         [this]( UI::AbstractMenuBar& menuBar, UI::AbstractMenuBar::EventData const& eventData)
@@ -44,8 +43,6 @@ void PassKeyApplication::update()
     }
 
     previousState_ = state_;
-
-    keyboard_.tick(); // Tick the Keyboard here
 }
 
 void PassKeyApplication::onKeyboardEvent(int32_t eventId, UsbKeyboard::EventData const * const event)

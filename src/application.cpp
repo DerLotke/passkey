@@ -6,10 +6,12 @@ static TFT_eSPI tft_;
 static TFT_eSprite backBuffer_(&tft_);
 static bool tftInitialized_ = false;
 
+static UsbKeyboard * usbKeyboard_ = nullptr; // will get initialized the first time an application is instantiated
 
 namespace UI {
     Application::Application(Application * parent):
-        Widget(getFullFrameRect(), parent)
+        Widget(getFullFrameRect(), parent),
+        keyboard_(usbKeyboard_ ? *usbKeyboard_ : *(new UsbKeyboard(false)) )
     {
         if (!tftInitialized_)
         {
@@ -28,11 +30,16 @@ namespace UI {
             ec1834bin_select(tft_);
             tftInitialized_ = true;
         }
+
+        // Register keyboard for the case a new one got created
+        usbKeyboard_ = &keyboard_;
     }
 
     void Application::update()
     {
         redraw(backBuffer_, getFullFrameRect());
         backBuffer_.pushSprite(0,0);
+
+        keyboard_.tick(); // Tick the Keyboard here
     }
 }
