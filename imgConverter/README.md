@@ -19,6 +19,12 @@ options:
                         color space of the original image (defaults to RGB)
 ```
 
+For example, in order to update the lockscreen using a PNG file without transparency, use the following command line prompt:
+
+```sh
+./imgConverter.py path/to/lockscreen_image.png > include/lockscreen_image.h 
+```
+
 
 ## Original Tool used by Lilygo
 
