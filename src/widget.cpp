@@ -8,7 +8,7 @@ namespace UI
         child_(nullptr),
         nextSibling_(nullptr),
         faceColor_(DefaultFaceColor),
-    hidden_(false)
+        hidden_(false)
     {
         if (parent_) {
 

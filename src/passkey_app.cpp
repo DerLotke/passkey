@@ -67,9 +67,9 @@ UI::AbstractMenuBar::MenuItems PassKeyApplication::loadDirectoryContent()
       if(DT_REG == dir->d_type)
       {
             if (dir->d_name != configFileName())
-        {
+            {
                 result.emplace_back(String(dir->d_name));
-        }
+            }
       }
   }
 
