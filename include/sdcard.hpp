@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Arduino.h>
+#include "USB.h"
+#include "USBMSC.h"
 #include <stdio.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -45,10 +47,16 @@ class SDCard
         static std::shared_ptr<SDCard> load();
         static void unload();
 
+        void openMassStorage();
+        void closeMassStorage();
+
     private:
         SDCard();
 
         SdCardData *card_;
         bool sdcardOk_;
         static std::mutex mutex_;
+
+        USBMSC massStorage_;
+        USBCDC usbSerial_;
 };
