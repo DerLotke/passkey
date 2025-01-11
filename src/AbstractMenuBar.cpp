@@ -8,11 +8,11 @@ namespace UI
     static AbstractMenuBar const * currentMenubarHandlingInput_ = nullptr;
 
     AbstractMenuBar::AbstractMenuBar(
-		    	const AbstractMenuBar::MenuItems &menuItems,
+                const AbstractMenuBar::MenuItems &menuItems,
                         Rect area,
                         unsigned selected,
                         Widget * const parent) :
-	    		    Widget(area, parent),
+                    Widget(area, parent),
                             items_(menuItems),
                             selectedItem_(selected)
     {
@@ -95,6 +95,12 @@ namespace UI
     bool AbstractMenuBar::isHandlingInput() const
     {
         return currentMenubarHandlingInput_ == this;
+    }
+
+    void AbstractMenuBar::resetContent(const AbstractMenuBar::MenuItems &menuItems)
+    {
+        items_ = menuItems;
+        selectedItem_ = 0;
     }
 
     void AbstractMenuBar::onKeyboardEvent(UsbKeyboard::Events event)

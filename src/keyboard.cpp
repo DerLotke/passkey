@@ -39,18 +39,18 @@ UsbKeyboard::UsbKeyboard(bool const skipUsb):
     if(!skipUsb) {
         keyBoard_.begin();
 
-	    std::shared_ptr<toml::table const> config = getConfig();
+        std::shared_ptr<toml::table const> config = getConfig();
 
         USB.productName("PassKey");
         USB.manufacturerName("Falk Software");
         USB.serialNumber("1");
         USB.firmwareVersion(1);
 
-	    // In default case, claim we are from DELL :P
+        // In default case, claim we are from DELL :P
         USB.VID((*config)["device"]["vendor_id"].value_or<uint16_t>(0x413c));
 
-	    // In default case, this ID resembles a nice generic keyboard
-	    USB.PID((*config)["device"]["product_id"].value_or<uint16_t>(0x2010));
+        // In default case, this ID resembles a nice generic keyboard
+        USB.PID((*config)["device"]["product_id"].value_or<uint16_t>(0x2010));
 
         USB.begin();
     }
@@ -92,12 +92,12 @@ void UsbKeyboard::onLedStateChange(arduino_usb_hid_keyboard_event_data_t const l
             esp_event_post(KEYBOARD_EVENT, KeyDown,&tmp, sizeof(EventData),0);
         }
 
-        if (changed.numlock)
-        {
-            esp_event_post(KEYBOARD_EVENT, KeyUp,&tmp, sizeof(EventData),0);
-        }
+        // if (changed.numlock)
+        // 
+        //     esp_event_post(KEYBOARD_EVENT, KeyUp,&tmp, (EventData),0);
+        // 
 
-        if (changed.scrolllock)
+        if (changed.numlock)
         {
             esp_event_post(KEYBOARD_EVENT, KeySelect,&tmp, sizeof(EventData),0);
         }

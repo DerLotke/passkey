@@ -4,6 +4,11 @@
 
 #include <functional>
 
+static String const mountString = "[Mount SD card]";
+static String const unmountString = "[Unmount SD card]";
+static bool isSdCardMounted_ = false;
+
+
 PassKeyApplication::PassKeyApplication(UI::Theme const& theme, Application * parent): UI::Application(parent),
     statusBar_(0, theme, this),
     typekeyMenu_(
@@ -73,6 +78,15 @@ UI::AbstractMenuBar::MenuItems PassKeyApplication::loadDirectoryContent()
       }
   }
 
+  if (isSdCardMounted_)
+  {
+      result.emplace_back(unmountString);
+  }
+  else
+  {
+      result.emplace_back(mountString);
+  }
+
   if(result.empty()) {
     result.emplace_back(String("No Files found"));
   }
@@ -85,8 +99,30 @@ void PassKeyApplication::onMenuEvent(UI::AbstractMenuBar &menuBar, UI::AbstractM
         if(state_ == ApplicationState::SelectPassword) 
         {
             selectedItem_ = menuBar.selectedItem();
+
+            // Special case: Mount or unmount SD card
+            if (selectedItem_ == mountString || selectedItem_ == unmountString)
+            {
+                std::shared_ptr<SDCard> sdCard = SDCard::load();
+                if (isSdCardMounted_)
+                {
+                    sdCard->closeMassStorage();
+                }
+                else
+                {
+                    sdCard->openMassStorage();
+                }
+                isSdCardMounted_ = !isSdCardMounted_;
+
+                // Reload menu in case files have changed and to update the mount menu item
+                typekeyMenu_.resetContent(loadDirectoryContent());
+                typekeyMenu_.refresh();
+                return;
+            }
+
             state_ = ApplicationState::ResetLedsBeforePassword;
         }
+
 }
 
 UI::Rect PassKeyApplication::getMenuArea() const

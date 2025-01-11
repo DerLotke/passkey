@@ -16,7 +16,7 @@ VerticalMenuBar::VerticalMenuBar(const AbstractMenuBar::MenuItems &menuItems,
     selectLabel_ = std::make_shared<Label>(Rect(0,0,1,1),"\x10S",this);
     upLabel_ = std::make_shared<Label>(Rect(area.width-1,0,1,1)," ",this);
     downLabel_ = std::make_shared<Label>(Rect(area.width-1,area.height-1,1,1),"\x19",this);
-    updateDisplayedLabels();
+    refresh();
 }
 
 VerticalMenuBar::VerticalMenuBar(const AbstractMenuBar::MenuItems &menuItems,
@@ -46,16 +46,16 @@ unsigned VerticalMenuBar::itemsOnDisplay() const
 void VerticalMenuBar::selectNext()
 {
     AbstractMenuBar::selectNext();
-    updateDisplayedLabels();
+    refresh();
 }
 
 void VerticalMenuBar::selectPrevious()
 {
     AbstractMenuBar::selectPrevious();
-    updateDisplayedLabels();
+    refresh();
 }
 
-void VerticalMenuBar::updateDisplayedLabels()
+void VerticalMenuBar::refresh()
 {
     for(auto label: menuLabel_)
     {

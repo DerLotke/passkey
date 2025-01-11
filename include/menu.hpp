@@ -56,6 +56,9 @@ void espMenuEventHandler(
         virtual void setHandleInput(bool useInput);
         virtual bool isHandlingInput() const;
 
+        virtual void refresh() = 0;
+        virtual void resetContent(const AbstractMenuBar::MenuItems &menuItems);
+
         protected:
 
         MenuItems items_;
@@ -75,29 +78,29 @@ void espMenuEventHandler(
 
     class Menu : public DrawDelegator
     {
-	using EventHandler = typename std::function<
-	    void(AbstractMenuBar&, UI::AbstractMenuBar::EventData const&)
-	>;
-	private:
-	    static std::set<Menu*> menus_;
-	    friend void espMenuEventHandler(
-			void *event_handler_arg,
-			esp_event_base_t event_base,
-			int32_t event_id,
-			void *event_data);
+    using EventHandler = typename std::function<
+        void(AbstractMenuBar&, UI::AbstractMenuBar::EventData const&)
+    >;
+    private:
+        static std::set<Menu*> menus_;
+        friend void espMenuEventHandler(
+            void *event_handler_arg,
+            esp_event_base_t event_base,
+            int32_t event_id,
+            void *event_data);
 
-	public:
-	    template<class MenuBarClass, class... Args>
-	    Menu(
-		EventHandler menuEventHandler,
-		Widget * const parent,
-		std::in_place_type_t<MenuBarClass>,
-		Args... menuBarArgs) :
-		    DrawDelegator(parent),
-		    menuBar_(std::move(
-			std::make_unique<MenuBarClass>(menuBarArgs..., this))),
-		    menuEventHandler_(menuEventHandler)
-	    {
+    public:
+        template<class MenuBarClass, class... Args>
+        Menu(
+        EventHandler menuEventHandler,
+        Widget * const parent,
+        std::in_place_type_t<MenuBarClass>,
+        Args... menuBarArgs) :
+            DrawDelegator(parent),
+            menuBar_(std::move(
+            std::make_unique<MenuBarClass>(menuBarArgs..., this))),
+            menuEventHandler_(menuEventHandler)
+        {
             static bool once = true;
             menuBar_->setHidden(true);
             menus_.insert(this);
@@ -110,23 +113,25 @@ void espMenuEventHandler(
                     &espMenuEventHandler,
                     NULL);
             }
-	    }
+        }
 
-	    virtual ~Menu();
+        virtual ~Menu();
 
-	    void makeActive();
+        void makeActive();
         void disable() { menuBar_->setHandleInput(false); }
         void enable() { menuBar_->setHandleInput(true); }
+        void resetContent(const AbstractMenuBar::MenuItems &menuItems) { menuBar_->resetContent(menuItems); }
+        void refresh() { menuBar_->refresh(); }
 
-	    void onEvent(
-	        void *event_handler_arg,
-        	esp_event_base_t event_base,
+        void onEvent(
+            void *event_handler_arg,
+            esp_event_base_t event_base,
                 int32_t event_id,
                 void *event_data);
 
-	private:
-	    std::unique_ptr<AbstractMenuBar> menuBar_;
-	    EventHandler menuEventHandler_;
+    private:
+        std::unique_ptr<AbstractMenuBar> menuBar_;
+        EventHandler menuEventHandler_;
     };
 
     class VerticalMenuBar: public AbstractMenuBar
@@ -150,6 +155,8 @@ void espMenuEventHandler(
             void selectPrevious() override;
             unsigned itemsOnDisplay() const override;
 
+            virtual void refresh() override;
+
             void setTheme(Theme const& theme) override;
 
         private:
@@ -157,9 +164,6 @@ void espMenuEventHandler(
             std::shared_ptr<Label> selectLabel_;
             std::shared_ptr<Label> upLabel_;
             std::shared_ptr<Label> downLabel_;
-
-            void updateDisplayedLabels();
-
     };
 
     static std::in_place_type_t<VerticalMenuBar> VerticalMenu;
